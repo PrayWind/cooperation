@@ -1,0 +1,89 @@
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->
+<!-- This file shows how to design a first-run page that provides a welcome screen to the user about the features of the add-in. -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contoso Task Pane Add-in</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+
+    <!-- For more information on Office UI Fabric, visit https://developer.microsoft.com/fabric. -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.1/css/fabric.min.css"/>
+
+    <!-- Template styles -->
+    <link href="taskpane.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="app">
+        <p>{{ msg }}</p>
+        <el-button id="btn1" @click="visible = true">Button1</el-button>
+        <el-dialog :visible.sync="visible" title="Hello world">
+            <p>Try Element</p>
+        </el-dialog>
+        <test></test>
+        <el-button id="btn2" @click="click1()">Button2</el-button>
+        <p id="ppp">测试测试</p>
+    </div>
+</body>
+
+
+<!-- 引入Vue -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!-- <script src="https://unpkg.com/vue/dist/vue.js"></script> -->
+<!-- 引入ElementUI -->
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<!-- 引入axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<!-- 引入jQuery -->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    Vue.component('test',{
+        template: '<h1>这是公共组件</h1>'
+    });
+
+    new Vue({
+        el: '#app',
+        data: function(){
+            return {
+                msg: '测试Vue',
+                visible: false
+            }
+        },
+        methods: {
+            click1: function() {
+                var that = this
+                // axios
+                //     .get('https://www.runoob.com/try/ajax/json_demo.json')
+                //     .then(response => (this.msg = response))
+                    // .catch(function (error) { // 请求失败处理
+                    //     console.log(error);
+                    // });
+                axios({
+                    method: 'get',
+                    url: 'https://www.baidu.com'
+                }).then(function (response) {
+                    $("#ppp").text("Hello world!");
+                        // this.msg = "lsdjlkj"
+                }).catch(function (error) { // 请求失败处理
+                    $("#ppp").text(error)
+                });
+                    
+            }
+        },
+        
+    })
+</script>
+
+</html>

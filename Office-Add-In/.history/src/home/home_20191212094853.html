@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <center>
+            <el-button @click="logout()">退出登录</el-button><br>
+            <p>{{ msg }}</p>
+            <test></test>
+            <el-dialog :visible.sync="visible" title="Hello world">
+                <p>Try Element</p>
+            </el-dialog>
+
+            <el-button id="btn1" @click="visible = true">测试ElementUI</el-button><br>
+            <el-button id="btn2" @click="click1()">获取Token，并存进localStorage</el-button><br>
+            <el-button id="btn3" @click="click2()">测试Token</el-button><br>
+            <el-button id="else" @click="test()">用于测试的按钮</el-button><br>
+            <router-link to="/test">测试路由</router-link>
+
+            <p id="ppp">测试测试</p>
+            <p id="localStorage">localStorage数据</p>
+            <p id="token">测试token</p>
+
+            <!-- 路由出口 -->
+            <!-- 路由匹配到的组件将渲染在这里 -->
+            <router-view></router-view>
+
+            <el-button @click="templet()">模板</el-button>
+            <!-- <a href="http://sys.uddata.com.cn:8080/menu/index?X-Token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbm5hbWUiOiJ1ZGRhdGF3aGYiLCJuYW1lIjoi546L5rW354O9IiwiaWQiOiI4ODgiLCJleHAiOjE1NzYxMTc2OTN9.Dep9AOZO_mEcOk3KSbVaGH3n5UUmmuNTX24TB9PIK64">模板</a> -->
+        </center>
+    </div>
+</body>
+
+
+<!-- 引入Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+<!-- 引入ElementUI -->
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<!-- 引入axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<!-- 引入router -->
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+<!-- 引入jQuery -->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script>
+    // 组件的模板对象
+    var test = {
+        template: '<h1>测试组件</h1>'
+    }
+
+    var home = {
+        template: '<h1>主页组件</h1>'
+    }
+
+    // Vue.component('test',{
+    //     template: '<h1>测试组件</h1>'
+    // });
+
+    var router = new VueRouter({
+        routes: [ 
+            { path: '/', redirect: "/home" },
+            { path: '/home', component: home },
+            { path: '/test', component: test }
+        ]
+    })
+
+    var vm2 = new Vue({
+        el: '#app',
+        data: {
+            msg: '测试Vue',
+            visible: false,
+        },
+        router: router,
+        // 写法不能缩写，不然word里的插件不能显示
+        components: {
+            test: test,
+            home: home
+        },
+        methods: {
+            logout: function() {
+                localStorage.clear();
+                window.location.href = 'taskpane.html'
+            },
+            test: function() {
+                // console.log("#####", Word.Application)
+                // $("#ppp").text(JSON.stringify(Office.context.auth));
+                // console.log(Office.context)
+                // window.location.href='home.html';
+            },
+            click1: function() {
+                axios({
+                    method: 'post',
+                    url: '/office/login',
+                    data: {
+                        username: "uddatays@uddata.partner.onmschina.cn",
+                        password: "Abc123.."
+                    }
+                }).then(function (response) {
+                    // 使用JSON.stringify(response)可以看到response里的数据
+                    localStorage.setItem("X-Token", response.data.data)
+                    $("#ppp").text(response.data.data);
+                    $("#localStorage").text(localStorage.getItem("X-Token"));
+                        // this.msg = "lsdjlkj"
+                }).catch(function (error) { // 请求失败处理
+                    this.$message.error("测试失败！");
+                });
+            },
+            click2: function() {
+                if (null === localStorage.getItem("X-Token")) {
+                    this.$message.error("请先登录！");
+                    return;
+                }
+                axios({
+                    method: 'get',
+                    url: '/office/test',
+                    headers: {
+                        'X-Token': localStorage.getItem("X-Token")
+                    }
+                }).then(function (response) {
+                    $("#token").text(response.data);
+                }).catch(function (error) { // 请求失败处理
+                    $("#token").text(error)
+                });
+            },
+            templet: function() {
+                console.log("1111")
+                if (null === localStorage.getItem("X-Token")) {
+                    this.$message.error("请先登录！");
+                    return;
+                }
+                axios({
+                    method: 'get',
+                    url: '/office/test/user',
+                    headers: {
+                        'X-Token': localStorage.getItem("X-Token")
+                    }
+                }).then(function (response) {
+                    console.log("successsuccess")
+                    debugger
+                }).catch(function (error) { // 请求失败处理
+                    console.log("errorerror")
+                });
+            }
+        }
+    })
+</script>
+
+</html>

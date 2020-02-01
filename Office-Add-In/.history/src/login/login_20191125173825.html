@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+</head>
+
+<body>
+    <div id="login">
+        <center>
+            <p>{{msg}}</p>
+            <el-form class="login-form" :model="loginForm" ref="loginForm" label-position="left">    
+                <el-form-item style="width:200px">
+                    <el-input name="username" type="text" v-model="loginForm.username" placeholder="username" />
+                </el-form-item>
+                <el-form-item style="width:200px">
+                    <el-input name="password" type="password" v-model="loginForm.password" placeholder="password" />
+                </el-form-item>
+                <el-button type="primary" style="width:200px" @click="login()">登录</el-button>
+            </el-form>
+        </center>
+    </div>
+</body>
+
+<!-- 引入Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+<!-- 引入ElementUI -->
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<!-- 引入axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<!-- 引入router -->
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+<!-- 引入jQuery -->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script> 
+    var vv = new Vue({
+        el: '#login',
+        data: {
+            msg: '登录页面',
+            loginForm: {
+                username: '',
+                password: ''
+            }
+        },
+
+        methods: {
+            login: function() {
+                this.msg = "sdaf"
+            }
+        }
+    })
+</script>    
+</html>
