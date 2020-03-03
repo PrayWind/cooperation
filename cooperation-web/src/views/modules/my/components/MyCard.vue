@@ -2,57 +2,46 @@
   <el-card style="margin-bottom:20px">
     <div slot="header" class="clearfix">
       <span>My Card</span>
-      <el-link type="danger" class="savePassword-link" @click="savePassword(myCard.id)">修改密码</el-link>
     </div>
 
     <div class="user-profile">
       <div class="box-center">
         <pan-thumb :image="myCard.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
           <div>Hello</div>
-          {{ myCard.loginName }}
-          <el-button type="mini" icon="el-icon-edit" circle @click="changeAvatar(myCard.id)"></el-button>
+          {{ myCard.username }}
+          <el-button type="mini" icon="el-icon-edit" circle @click="uploadAvatar(myCard.id)"></el-button>
         </pan-thumb>
       </div>
       <div class="box-center">
-        <div class="user-name text-center">{{ myCard.roleName }}</div>
-        <div class="user-role text-center text-muted">{{ myCard.name | uppercaseFirst }}</div>
+        <div class="user-name text-center">{{ myCard.username }}</div>
+        <div class="user-role text-center text-muted">{{ myCard.name }}</div>
       </div>
     </div>
 
     <div class="user-bio">
-      <div class="user-dept user-bio-section">
-        <div class="user-bio-section-header">
-          <svg-icon icon-class="dept" />
-          <span>Dept</span>
-        </div>
-        <div class="user-bio-section-body">
-          <div class="text-muted">{{myCard.deptName}}</div>
-        </div>
-      </div>
-
       <div class="user-role user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon icon-class="role" />
+          <icon-svg name="role"></icon-svg>
           <span>Role</span>
         </div>
         <div class="user-bio-section-body">
-          <div class="text-muted">{{myCard.roleName}}</div>
+          <div class="text-muted">{{myCard.username}}</div>
         </div>
       </div>
 
       <div class="user-phone user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon icon-class="tele" />
-          <span>Tele</span>
+          <icon-svg name="mobile"></icon-svg>
+          <span>Mobile</span>
         </div>
         <div class="user-bio-section-body">
-          <div class="text-muted">{{myCard.tele}}</div>
+          <div class="text-muted">{{myCard.mobile}}</div>
         </div>
       </div>
 
       <div class="user-email user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon icon-class="email" />
+          <icon-svg name="email"></icon-svg>
           <span>Email</span>
         </div>
         <div class="user-bio-section-body">
@@ -81,8 +70,6 @@ export default {
     }
   },
 
-  inject: ["reload"],
-
   data() {
     return {
       myCard: this.userInfo
@@ -90,28 +77,14 @@ export default {
   },
 
   methods: {
-    savePassword(id) {
-      this.$refs.savePassword.dialogOpen(id);
-    },
-    changeAvatar() {
+    uploadAvatar() {
       this.$refs.uploadAvatar.dialogOpen();
-    }
-  },
-
-  filters: {
-    uppercaseFirst(value) {
-      if (!value) return "";
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.savePassword-link {
-  float: right;
-}
 .clearfix {
   color: #606266;
 }

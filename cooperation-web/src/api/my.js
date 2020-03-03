@@ -1,36 +1,26 @@
-export function getUserInfo() {
-  return request({
-    url: '/my/getUserInfo',
-    method: 'post',
+import http from "@/utils/httpRequest"
+
+export function getMyInfo() {
+  return http({
+    url: http.adornUrl('/sys/user/info'),
+    method: 'get',
+    params: http.adornParams()
   })
 }
 
-export function saveUserInfo(info) {
-  const data = {
-    info
-  }
-  return request({
-    url: '/my/saveUserInfo',
+export function saveMyInfo(info) {
+  return http({
+    url: http.adornUrl('/my/update'),
     method: 'post',
-    data
-  })
-}
-
-export function savePassword(form) {
-  const data = {
-    form
-  }
-  return request({
-    url: '/my/savePassword',
-    method: 'post',
-    data
+    data: http.adornData(info)
   })
 }
 
 export function uploadAvatar(file) {
   const data = file
-  return request({
-    url: '/my/uploadAvatar',
+
+  return http({
+    url: http.adornUrl('/my/uploadAvatar'),
     method: 'post',
     data
   })

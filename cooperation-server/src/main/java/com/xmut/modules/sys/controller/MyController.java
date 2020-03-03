@@ -1,17 +1,12 @@
 package com.xmut.modules.sys.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import org.apache.tomcat.util.http.ResponseUtil;
+import com.xmut.common.utils.R;
+import com.xmut.modules.sys.entity.SysUserEntity;
+import com.xmut.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -22,165 +17,40 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/my")
-public class MyController {
+public class MyController extends AbstractController {
+
+    // 当前处于项目根路径(cooperation-service)，./ 代表当前路径，注意：最后要加/，不然保存的路径和avatar同级
+    private static final String AVATAR = "src/main/resources/static/avatar/";
 
     @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IRoleService roleService;
-
-    @Autowired
-    private IDepartmentService departmentService;
-
-    // 当前处于项目根路径(uddata-service)，./ 代表当前路径，注意：最后要加/，不然保存的路径和avatar同级
-//    private static final String AVATAR = "src/main/resources/static/avatar/";
-
-    // 服务器的路径
-    private static final String AVATAR = "../webapps/uddata/WEB-INF/images/avatar/";
+    private SysUserService sysUserService;
 
     /**
-     * @Description: 获取用户信息
-     * @Author: whf
-     * @Date: 2019/7/31
-     * @Param: [userId]
-     * @Return: java.lang.Object
+     * 修改用户信息
      */
-    @RequestMapping("/getUserInfo")
-    public Object getUserInfo(@LoginAdmin String userId) {
+    @PostMapping("/update")
+    public R update(@RequestBody SysUserEntity user){
 
-        User user = null;
+        SysUserEntity baseUser = getUser();
+        baseUser.setName(user.getName());
+        baseUser.setMobile(user.getMobile());
+        baseUser.setEmail(user.getEmail());
 
-        try {
-            user = userService.getById(userId);
-        } catch (Exception e) {
-            return ResponseUtil.deletedArgumentValue("用户");
-        }
+        sysUserService.updateById(baseUser);
 
-        // 获取用户角色名
-        String roleName = "";
-        List<Role> roleList = null;
-        try {
-            roleList = roleService.findListByUserId(userId);
-        } catch (Exception e) {
-            return ResponseUtil.deletedArgumentValue("用户");
-        }
-        for (Role temp : roleList) {
-            roleName = roleName + " " + temp.getName();
-        }
-        roleName = roleName.trim();
-
-        // 获取用户部门名
-        String deptName = "";
-        Department department = null;
-        try {
-            department = departmentService.findDepartmentByUserId(userId);
-        } catch (Exception e) {
-            return ResponseUtil.deletedArgumentValue("用户");
-        }
-        deptName = department.getDeptName();
-
-        user.setRoleName(roleName);
-        user.setDeptName(deptName);
-
-        return ResponseUtil.ok(user);
+        return R.ok();
     }
 
     /**
-     * @Description: 修改用户信息
-     * @Author: whf
-     * @Date: 2019/7/31
-     * @Param: [userId, data]
-     * @Return: java.lang.Object
-     */
-    @RequestMapping("/saveUserInfo")
-    public Object saveUserInfo(@LoginAdmin String userId, @RequestBody JSONObject data) {
-
-        /**
-         * boolean saveOrUpdate(T entity);
-         * 如果存在id字段，则更新该记录，
-         * 不存在，则插入一条记录。
-         */
-
-        JSONObject userInfo = data.getJSONObject("info");
-        User user = null;
-        try {
-            user = userService.getById(userId);
-            user.setName(userInfo.getString("name"));
-            user.setTele(userInfo.getString("tele"));
-            user.setEmail(userInfo.getString("email"));
-        } catch (Exception e) {
-            return ResponseUtil.deletedArgumentValue("用户");
-        }
-
-        try {
-            userService.updateById(user);
-        } catch (Exception e) {
-            return ResponseUtil.deletedArgumentValue("用户");
-        }
-
-        return ResponseUtil.ok("修改成功");
-    }
-
-    /**
-     * @Description: 修改密码
-     * @Author: whf
-     * @Date: 2019/7/31
-     * @Param: [data]
-     * @Return: java.lang.Object
-     */
-    @RequestMapping("/savePassword")
-    public Object savePassword(@RequestBody JSONObject data) {
-
-        JSONObject form = data.getJSONObject("form");
-        String userId = form.getString("id");
-        String origin = form.getString("origin");
-        String password = form.getString("pass");
-
-        User user = null;
-        try {
-            user = userService.getById(userId);
-        } catch (Exception e) {
-            return ResponseUtil.deletedArgumentValue("用户");
-        }
-
-        if (origin.equals(user.getPassword())) {
-            user.setPassword(password);
-            try {
-                userService.updateById(user);
-            } catch (Exception e) {
-                return ResponseUtil.deletedArgumentValue("用户");
-            }
-        } else {
-            return ResponseUtil.passwordFail();
-        }
-
-        return ResponseUtil.ok("密码修改成功");
-    }
-
-    /**
-     * @Description: 上传图片
-     * @Author: whf
-     * @Date: 2019/7/31
-     * @Param: [map, file]
-     * @Return: java.lang.Object
+     * 上传图片
      */
     @RequestMapping("/uploadAvatar")
-    public Object uploadAvatar(@ModelAttribute MultipartFile data, @LoginAdmin String userId) {
+    public R uploadAvatar(@RequestBody MultipartFile data) {
 
-        String filename = "";
-        if (null != data) {
-            filename = data.getOriginalFilename();
-        } else {
-            return ResponseUtil.uploadFail();
-        }
+        // 使用 data.getOriginalFilename() 可以获取图片名字
+        String filename = data.getOriginalFilename();
 
-        User user = null;
-        try {
-            user = userService.getById(userId);
-        } catch (Exception e) {
-            return ResponseUtil.deletedArgumentValue("用户");
-        }
+        SysUserEntity user = getUser();
 
         // 如果上传一样的图片会覆盖，所以这边用uuid拼接
         String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -192,26 +62,22 @@ public class MyController {
         FileOutputStream fos = null;
         try {
             // 把文件名保存到数据库
-            user.setAvatar(filename);
-            try {
-                userService.updateById(user);
-            } catch (Exception e) {
-                return ResponseUtil.deletedArgumentValue("用户");
-            }
+            user.setAvatar(path);
+            sysUserService.updateById(user);
             // 写入文件
             fos = new FileOutputStream(path);
             fos.write(data.getBytes());
         } catch (Exception e) {
-            return ResponseUtil.uploadFail();
+            return R.error(501, "服务器错误，上传失败！");
         } finally {
             try {
                 fos.close();
             } catch (Exception e) {
-                return ResponseUtil.uploadFail();
+                return R.error(501, "服务器错误，上传失败！");
             }
         }
-        // 图片上传成功把图片的名字返回前端，便于刷新页面
-        return ResponseUtil.ok("图片上传成功", filename);
+        // 图片上传成功把图片的路径返回前端，便于刷新页面
+        return R.ok().put("avatar", user.getAvatar());
     }
 
     /**
@@ -221,7 +87,7 @@ public class MyController {
      * @Param: [logo, response]
      * @Return: java.lang.Object
      */
-    @RequestMapping("/loadAvatar")
+    /*@RequestMapping("/loadAvatar")
     public Object loadAvatar(String filename, HttpServletResponse response) { // public Object loadAvatar(@RequestBody JSONObject data, HttpServletResponse response) {
 
 //        String filename = data.getString("filename");
@@ -238,7 +104,7 @@ public class MyController {
         } else {
             return ResponseUtil.downloadFail();
         }
-        return ResponseUtil.ok("图片加载成功");
+        return ResponseUtil.ok("图片加载成功");*/
 
         /*if (!StringUtils.isEmpty(filename)) {
             File file = new File(new File(AVATAR).getAbsolutePath() + "/" + filename);
@@ -275,7 +141,7 @@ public class MyController {
                     }
                 }
             }
-        }*/
-    }
+        }
+    }*/
 
 }

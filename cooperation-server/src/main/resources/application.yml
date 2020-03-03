@@ -4,10 +4,10 @@ server:
     uri-encoding: UTF-8
     max-threads: 1000
     min-spare-threads: 30
-  port: 8080
+  port: 8002
   connection-timeout: 5000ms
   servlet:
-    context-path: /renren-fast
+    context-path: /cooperation-server
 
 spring:
   # 环境 dev|test|prod
@@ -19,8 +19,8 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: 5MB
+      max-request-size: 10MB
       enabled: true
   redis:
     open: false  # 是否开启redis缓存  true开启   false关闭

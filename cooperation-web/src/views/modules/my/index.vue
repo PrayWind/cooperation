@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-row :gutter="25">
       <el-col :span="7" :xs="24">
-        <MyCard :userInfo="userInfo" v-if="isReload"></MyCard>
+        <MyCard :userInfo="userInfo"></MyCard>
       </el-col>
 
       <el-col :span="17" :xs="24">
-        <MyAccount :myAccount="myAccount" @updateUserInfo="updateUserInfo" v-if="isReload"></MyAccount>
+        <MyAccount :myAccount="myAccount" @updateUserInfo="updateUserInfo"></MyAccount>
       </el-col>
     </el-row>
   </div>
@@ -29,27 +29,18 @@ export default {
     return {
       isReload: true,
       userInfo: {
-        id: "",
-        loginName: "",
+        username: "",
         name: "",
-        tele: "",
         email: "",
-        avatar: "",
-        roleName: "",
-        deptName: ""
+        mobile: "",
+        avatar: ""
       },
       myAccount: {
-        loginName: "",
+        username: "",
         name: "",
-        tele: "",
-        email: ""
+        email: "",
+        mobile: ""
       }
-    };
-  },
-
-  provide() {
-    return {
-      reload: this.reload
     };
   },
 
@@ -65,32 +56,29 @@ export default {
 
     updateUserInfo(newUserInfo) {
       // 如果这里直接用 this.userInfo = this.myAccount 会导致数据双向绑定
-      this.userInfo.loginName = newUserInfo.loginName;
+      this.userInfo.username = newUserInfo.username;
       this.userInfo.name = newUserInfo.name;
-      this.userInfo.tele = newUserInfo.tele;
       this.userInfo.email = newUserInfo.email;
+      this.userInfo.mobile = newUserInfo.mobile;
     }
   },
 
-  created() {
-    my.getUserInfo()
-      .then(res => {
-        this.userInfo.id = res.data.data.id;
-        this.userInfo.loginName = res.data.data.loginName;
-        this.userInfo.name = res.data.data.name;
-        this.userInfo.tele = res.data.data.tele;
-        this.userInfo.email = res.data.data.email;
-        this.userInfo.avatar = this.$store.getters.avatar;
-        this.userInfo.roleName = res.data.data.roleName;
-        this.userInfo.deptName = res.data.data.deptName;
+  mounted() {
+    my.getMyInfo().then(({ data }) => {
+      if (data && data.code === 0) {
+        this.userInfo.username = data.user.username;
+        this.userInfo.name = data.user.name;
+        this.userInfo.email = data.user.email;
+        this.userInfo.mobile = data.user.mobile;
+        // this.userInfo.avatar = this.$store.getters.avatar;
 
         // 给MyAccount.vue的数据
-        this.myAccount.loginName = res.data.data.loginName;
-        this.myAccount.name = res.data.data.name;
-        this.myAccount.tele = res.data.data.tele;
-        this.myAccount.email = res.data.data.email;
-      })
-      .catch(err => {});
+        this.myAccount.username = data.user.username;
+        this.myAccount.name = data.user.name;
+        this.myAccount.email = data.user.email;
+        this.myAccount.mobile = data.user.mobile;
+      }
+    });
   }
 };
 </script>

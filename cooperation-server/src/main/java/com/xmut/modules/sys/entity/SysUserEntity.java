@@ -50,6 +50,17 @@ public class SysUserEntity implements Serializable {
 	private String password;
 
 	/**
+	 * 昵称
+	 */
+	private String name;
+
+	/**
+	 * 头像
+	 */
+	private String avatar;
+
+
+	/**
 	 * 盐
 	 */
 	private String salt;

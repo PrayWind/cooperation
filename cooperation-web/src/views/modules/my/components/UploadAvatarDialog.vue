@@ -4,7 +4,6 @@
     <el-upload
       class="avatar-uploader"
       action
-      :headers="headers"
       :http-request="uploadAvatar"
       :accept="'image/*'"
       :show-file-list="false"
@@ -25,8 +24,9 @@ export default {
       dialogFormVisible: false,
       preview: "",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
+        "Content-Type": "multipart/form-data"
+      },
+      url: process.env.OPEN_PROXY ? "/proxyApi/" : window.SITE_CONFIG.baseUrl
     };
   },
 
@@ -36,28 +36,43 @@ export default {
     }
   },
 
-  inject: ["reload"],
-
   methods: {
     // 上传头像
     uploadAvatar(data) {
+      console.log("@@@@", data);
+      console.log("$$$$", this.url);
       let file = new FormData();
       file.append("data", data.file, data.file.name);
-      my.uploadAvatar(file)
-        .then(res => {
-          // // 本地
-          // this.myCard.avatar =
-          //   process.env.BASE_API + "/avatar/" + res.data.data;
-
-          // 服务器
+      console.log("#####", file.get("data"));
+      // this.$http({
+      //   url: this.url + "/my/uploadAvatar",
+      //   method: "post",
+      //   data: file,
+      //   headers: this.headers
+      // }).then(({ data }) => {
+      //   if (data && data.code === 0) {
+      //     this.$message({
+      //       message: "操作成功",
+      //       type: "success",
+      //       duration: 1500,
+      //       onClose: () => {}
+      //     });
+      //   } else {
+      //     this.$message.error(data.msg);
+      //   }
+      // });
+      my.uploadAvatar(file).then(({ data }) => {
+        
+        if (data && data.code === 0) {
           this.myCard.avatar =
-            process.env.BASE_API + "/img/avatar/" + res.data.data;
-          this.$store.commit("SET_AVATAR", this.myCard.avatar);
+            url + data;
 
-          this.$message.success(res.data.errmsg);
+          // this.$store.commit("SET_AVATAR", this.myCard.avatar);
+
+          this.$message.success(data.msg);
           this.dialogFormVisible = false;
-        })
-        .catch(err => {});
+        }
+      });
     },
 
     // 关闭窗口提示
@@ -100,16 +115,11 @@ export default {
       const isImage =
         file.type === "image/png" ||
         file.type === "image/jpg" ||
-        file.type === "image/jpeg" ||
-        file.type === "image/bmp" ||
-        file.type === "image/gif" ||
-        file.type === "image/webp";
+        file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isImage) {
-        this.$message.error(
-          "上传头像图片只能是 png/jpg/jpeg/bmp/gif/webp 格式!"
-        );
+        this.$message.error("上传头像图片只能是 png/jpg/jpeg 格式!");
       }
       if (!isLt2M) {
         this.$message.error("上传头像图片大小不能超过 2MB!");
