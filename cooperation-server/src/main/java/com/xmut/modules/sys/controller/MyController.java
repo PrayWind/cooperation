@@ -62,7 +62,7 @@ public class MyController extends AbstractController {
         FileOutputStream fos = null;
         try {
             // 把文件名保存到数据库
-            user.setAvatar(path);
+            user.setAvatar(filename);
             sysUserService.updateById(user);
             // 写入文件
             fos = new FileOutputStream(path);

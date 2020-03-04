@@ -6,7 +6,7 @@
 
     <div class="user-profile">
       <div class="box-center">
-        <pan-thumb :image="myCard.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
+        <pan-thumb :image="avatar" :height="'100px'" :width="'100px'" :hoverable="false">
           <div>Hello</div>
           {{ myCard.username }}
           <el-button type="mini" icon="el-icon-edit" circle @click="uploadAvatar(myCard.id)"></el-button>
@@ -63,6 +63,14 @@ import UploadAvatarDialog from "./UploadAvatarDialog";
 
 export default {
   components: { PanThumb, UploadAvatarDialog },
+
+  computed: {
+    avatar: {
+      get() {
+        return this.$store.state.user.avatar;
+      }
+    }
+  },
 
   props: {
     userInfo: {

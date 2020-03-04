@@ -16,14 +16,9 @@
 import * as my from "@/api/my";
 import MyCard from "./components/MyCard";
 import MyAccount from "./components/MyAccount";
-import { mapGetters } from "vuex";
 
 export default {
   components: { MyCard, MyAccount },
-
-  computed: {
-    ...mapGetters(["avatar"])
-  },
 
   data() {
     return {
@@ -32,8 +27,7 @@ export default {
         username: "",
         name: "",
         email: "",
-        mobile: "",
-        avatar: ""
+        mobile: ""
       },
       myAccount: {
         username: "",
@@ -70,7 +64,6 @@ export default {
         this.userInfo.name = data.user.name;
         this.userInfo.email = data.user.email;
         this.userInfo.mobile = data.user.mobile;
-        // this.userInfo.avatar = this.$store.getters.avatar;
 
         // 给MyAccount.vue的数据
         this.myAccount.username = data.user.username;

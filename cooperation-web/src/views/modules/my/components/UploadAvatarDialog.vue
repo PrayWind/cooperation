@@ -9,8 +9,7 @@
       :show-file-list="false"
       :before-upload="beforeUploadAvatar"
     >
-      <img v-if="preview" :src="preview" class="avatar" />
-      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      <i class="el-icon-plus avatar-uploader-icon"></i>
     </el-upload>
   </el-dialog>
 </template>
@@ -19,10 +18,20 @@
 import * as my from "@/api/my";
 
 export default {
+  computed: {
+    avatar: {
+      get() {
+        return this.$store.state.user.avatar;
+      },
+      set(val) {
+        this.$store.commit("user/updateAvatar", val);
+      }
+    }
+  },
+
   data() {
     return {
       dialogFormVisible: false,
-      preview: "",
       headers: {
         "Content-Type": "multipart/form-data"
       },
@@ -39,40 +48,24 @@ export default {
   methods: {
     // 上传头像
     uploadAvatar(data) {
-      console.log("@@@@", data);
-      console.log("$$$$", this.url);
       let file = new FormData();
       file.append("data", data.file, data.file.name);
-      console.log("#####", file.get("data"));
-      // this.$http({
-      //   url: this.url + "/my/uploadAvatar",
-      //   method: "post",
-      //   data: file,
-      //   headers: this.headers
-      // }).then(({ data }) => {
-      //   if (data && data.code === 0) {
-      //     this.$message({
-      //       message: "操作成功",
-      //       type: "success",
-      //       duration: 1500,
-      //       onClose: () => {}
-      //     });
-      //   } else {
-      //     this.$message.error(data.msg);
-      //   }
-      // });
-      my.uploadAvatar(file).then(({ data }) => {
-        
-        if (data && data.code === 0) {
-          this.myCard.avatar =
-            url + data;
-
-          // this.$store.commit("SET_AVATAR", this.myCard.avatar);
-
-          this.$message.success(data.msg);
-          this.dialogFormVisible = false;
-        }
-      });
+      my.uploadAvatar(file)
+        .then(({ data }) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: "操作成功",
+              type: "success",
+              duration: 1500,
+              onClose: () => {}
+            });
+            this.avatar = data.avatar;
+            this.dialogFormVisible = false;
+          } else {
+            this.$message.error(data.msg);
+          }
+        })
+        .catch(() => {});
     },
 
     // 关闭窗口提示
@@ -86,7 +79,6 @@ export default {
 
     // 打开上传头像对话框
     dialogOpen() {
-      this.preview = "";
       this.dialogFormVisible = true;
     },
 
