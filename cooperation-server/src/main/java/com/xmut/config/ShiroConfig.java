@@ -25,8 +25,7 @@ import java.util.Map;
 
 /**
  * Shiro配置
- *
- * @author Mark sunlightcs@gmail.com
+ * 使用 @Bean() 注解给容器中添加组件
  */
 @Configuration
 public class ShiroConfig {

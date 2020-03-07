@@ -7,6 +7,7 @@ server:
   port: 8002
   connection-timeout: 5000ms
   servlet:
+    # 配置这个后导致浏览器访问路径必须加上这个配置，如http://localhost:8002/cooperation-server/ + API(或静态资源)
     context-path: /cooperation-server
 
 spring:

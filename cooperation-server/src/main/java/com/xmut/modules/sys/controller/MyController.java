@@ -6,6 +6,7 @@ import com.xmut.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.FileOutputStream;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class MyController extends AbstractController {
      * 修改用户信息
      */
     @PostMapping("/update")
-    public R update(@RequestBody SysUserEntity user){
+    public R update(@RequestBody SysUserEntity user) {
 
         SysUserEntity baseUser = getUser();
         baseUser.setName(user.getName());
@@ -79,69 +80,5 @@ public class MyController extends AbstractController {
         // 图片上传成功把图片的路径返回前端，便于刷新页面
         return R.ok().put("avatar", user.getAvatar());
     }
-
-    /**
-     * @Description: 加载图片（没用到）
-     * @Author: whf
-     * @Date: 2019/7/31
-     * @Param: [logo, response]
-     * @Return: java.lang.Object
-     */
-    /*@RequestMapping("/loadAvatar")
-    public Object loadAvatar(String filename, HttpServletResponse response) { // public Object loadAvatar(@RequestBody JSONObject data, HttpServletResponse response) {
-
-//        String filename = data.getString("filename");
-        String filepath = "";
-        if (!StringUtils.isEmpty(filename)) {
-            filepath = AVATAR + filename;
-//            filepath = (new File(AVATAR).getAbsolutePath() + "\\" + filename);
-
-            try {
-                FileUtil.loadPhoto(response, filepath);
-            } catch (IOException e) {
-                return ResponseUtil.downloadFail();
-            }
-        } else {
-            return ResponseUtil.downloadFail();
-        }
-        return ResponseUtil.ok("图片加载成功");*/
-
-        /*if (!StringUtils.isEmpty(filename)) {
-            File file = new File(new File(AVATAR).getAbsolutePath() + "/" + filename);
-            if (null != file) {
-                FileInputStream in = null;
-                OutputStream out = null;
-                try {
-                    // 如果in为空，说明文件不存在，但数据库的值还在
-                    in = new FileInputStream(file);
-                    out = response.getOutputStream();
-                    byte[] buff = new byte[100];
-                    int rc = 0;
-                    while ((rc = in.read(buff, 0, 100)) > 0) {
-                        out.write(buff, 0, rc);
-                    }
-
-                } catch (Exception e) {
-                    return ResponseUtil.fail();
-                } finally {
-                    try {
-                        in.close();
-                    } catch (Exception e) {
-                        return ResponseUtil.fail();
-                    }
-                    try {
-                        out.flush();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }*/
 
 }

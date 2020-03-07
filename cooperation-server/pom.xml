@@ -72,6 +72,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+		<!-- 配置文件处理器，有了这个包给application.yml添加配置就会有提示 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
@@ -244,6 +245,7 @@
 			</extension>
 		</extensions>
 		<plugins>
+			<!-- 这个插件，可以将程序打包成一个可执行的jar包，可以复制出来在cmd里用 "java -jar jar包" 即可运行 -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

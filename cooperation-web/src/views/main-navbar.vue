@@ -100,7 +100,6 @@ export default {
   methods: {
     // 修改密码
     updatePasswordHandle() {
-      console.log("!!!!", this.avatar)
       this.updatePassowrdVisible = true;
       this.$nextTick(() => {
         this.$refs.updatePassowrd.init();
