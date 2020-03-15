@@ -1,5 +1,6 @@
 package com.xmut.modules.coordination.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xmut.common.utils.PageUtils;
@@ -50,8 +51,6 @@ public class ReportController extends AbstractController {
      */
     @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
-        String userId = getUserId() + "";
-
         PageUtils page = reportService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -78,7 +77,25 @@ public class ReportController extends AbstractController {
     }
 
     /*
-     * 获取 添加或修改报告下的指标
+     * 获取报告下的所有指标
+     */
+    @GetMapping("/indxs")
+    public R indxs(@RequestParam Map<String, Object> params) {
+        String reportId = (String) params.get("reportId");
+        List<ReportIndxEntity> reportIndxList = reportIndxService.list(new QueryWrapper<ReportIndxEntity>()
+                .lambda().eq(ReportIndxEntity::getReportId, reportId));
+        if (ObjectUtils.isEmpty(reportIndxList)) {
+            return R.ok();
+        }
+
+        List<Long> indxIds = reportIndxList.stream().map(ReportIndxEntity::getIndxId).collect(Collectors.toList());
+        List<IndxEntity> indxs = (List<IndxEntity>) indxService.listByIds(indxIds);
+
+        return R.ok().put("indxs", indxs);
+    }
+
+    /*
+     * 添加或修改报告时 获取报告下的指标
      */
     @GetMapping("/indx")
     public R indx(@RequestParam Map<String, Object> params) {
@@ -88,7 +105,7 @@ public class ReportController extends AbstractController {
 
         // reportId==0说明是获取新增报告时的指标，reportId!=0说明是获取修改报告时的指标
         List<ReportIndxEntity> reportIndxList = null;
-        List<String> indxIds = null;
+        List<Long> indxIds = null;
         if (!"0".equals(reportId)) {
             reportIndxList = reportIndxService.list(new QueryWrapper<ReportIndxEntity>().lambda()
                     .eq(ReportIndxEntity::getReportId, reportId));
@@ -105,113 +122,81 @@ public class ReportController extends AbstractController {
     }
 
     /*
-     * 获取指标下的所有模板
-     */
-    @Transactional
-    @RequestMapping("/allIndxTemplet")
-    public R allIndxTemplet(@RequestBody JSONObject data) {
-        /*String indxTreeId = data.getString("indxTreeId");
-        Templet templet = null;
-        List<Templet> templetList = new ArrayList<Templet>();
-        List<IndxTemplet> indxTempletList = null;
-
-        if (StringUtils.isEmpty(indxTreeId)) {
-            return ResponseUtil.deletedArgumentValue("指标");
-        }
-
-        // 获取指标下的模板
-        indxTempletList = indxTempletService.list(new QueryWrapper<IndxTemplet>().lambda().eq(IndxTemplet::getIndxTreeId, indxTreeId));
-        for (IndxTemplet temp : indxTempletList) {
-            try {
-                templet = templetService.getById(temp.getTempletId());
-                templet.setIndxTreeId(temp.getIndxTreeId());
-            } catch (Exception e) {
-                return ResponseUtil.deletedArgumentValue("模板");
-            }
-            templetList.add(templet);
-        }*/
-
-        return R.ok();
-    }
-
-    /*
      * 创建报告
      */
     @Transactional
-    @RequestMapping("/saveReport")
-    public R saveReport(@RequestBody JSONObject data) {
-        /*JSONArray templetList = data.getJSONArray("templetList");
-        List<Templet> selectTempletList = JSONArray.parseArray(templetList.toJSONString(), Templet.class);
-        JSONObject formData = data.getJSONObject("formData");
+    @PostMapping("/save")
+    public R save(@RequestBody JSONObject data) {
+        JSONObject object = data.getJSONObject("dataForm");
+        ReportEntity report = JSONObject.toJavaObject(object, ReportEntity.class);
+        // 插入数据后，已插入数据的主键直接注入到report对象
+        reportService.insertReport(report);
 
-        ProjectIndx projectIndx = new ProjectIndx();
-        Project project = new Project();
-        String projectId = com.cn.uddata.core.utils.StringUtils.randomUUID();
-        project.setId(projectId);
-        project.setName(formData.getString("name"));
-        project.setLeader(formData.getString("leader"));
-        project.setProjectInfo(formData.getString("projectInfo"));
-        project.setType(formData.getString("type"));
-        project.setCreateTime(formData.getString("createTime"));
-        project.setPredictTime(formData.getString("predictTime"));
-
-        // 保存项目信息和对应模板关联信息
-        try {
-            projectService.save(project);
-            for (Templet temp : selectTempletList) {
-                projectIndx.setId("");
-                projectIndx.setProjectId(projectId);
-                projectIndx.setIndxTreeId(temp.getIndxTreeId());
-                projectIndx.setTempletId(temp.getId());
-                reportIndxService.save(projectIndx);
+        JSONArray array = data.getJSONArray("selectedIndxList");
+        if (!ObjectUtils.isEmpty(array)) {
+            List<IndxEntity> selectedIndxList = JSONArray.parseArray(array.toJSONString(), IndxEntity.class);
+            List<Long> indxIds = selectedIndxList.stream().map(IndxEntity::getId).collect(Collectors.toList());
+            for (Long temp : indxIds) {
+                ReportIndxEntity temp1 = new ReportIndxEntity();
+                temp1.setIndxId(temp);
+                temp1.setReportId(report.getId());
+                reportIndxService.save(temp1);
             }
-        } catch (Exception e) {
-            return ResponseUtil.serverProblem(new Exception("保存失败"));
-        }*/
+        }
 
         return R.ok();
     }
 
     /*
-     * @Description: 获取所有用户，或者获取所有用户和与项目有关用户
-     * @Author: whf
-     * @Date: 2019/10/28
+     * 修改报告
      */
-    @RequestMapping("/userList")
-    public R userList(@RequestBody JSONObject data) {
+    @Transactional
+    @PostMapping("/update")
+    public R update(@RequestBody JSONObject data) {
+        JSONObject object = data.getJSONObject("dataForm");
+        ReportEntity report = JSONObject.toJavaObject(object, ReportEntity.class);
+        reportService.updateById(report);
+
+        reportIndxService.remove(new QueryWrapper<ReportIndxEntity>().lambda()
+                .eq(ReportIndxEntity::getReportId, report.getId()));
+        JSONArray array = data.getJSONArray("selectedIndxList");
+        if (!ObjectUtils.isEmpty(array)) {
+            List<IndxEntity> selectedIndxList = JSONArray.parseArray(array.toJSONString(), IndxEntity.class);
+            List<Long> indxIds = selectedIndxList.stream().map(IndxEntity::getId).collect(Collectors.toList());
+            for (Long temp : indxIds) {
+                ReportIndxEntity temp1 = new ReportIndxEntity();
+                temp1.setIndxId(temp);
+                temp1.setReportId(report.getId());
+                reportIndxService.save(temp1);
+            }
+        }
+
+        return R.ok();
+    }
+
+    /*
+     * 删除报告
+     */
+    @Transactional
+    @RequestMapping("/deleteReports")
+    public R deleteReports(@RequestBody JSONObject data) {
         /*String projectId = data.getString("projectId");
 
-         *//**
-         * 思路：不管什么情况，都必须用到所有用户，所以先获取所有用户
-         *      然后开始判断，如果projectId为空，则直接返回所有用户；
-         *      如果不为空，则返回所有用户和与项目有关用户。
-         *//*
-
-        List<User> userList = null;
-        try {
-            userList = userService.list();
-        } catch (Exception e) {
-            return ResponseUtil.serverProblem(new Exception("所有用户获取失败"));
-        }
-
         if (StringUtils.isEmpty(projectId)) {
-            return ResponseUtil.ok(userList);
+            return ResponseUtil.deletedArgumentValue("项目");
         }
 
-        // 获取与项目有关用户
-        List<String> userIds = null;
-        List<ProjectUser> projectUserList = null;
         try {
-            projectUserList = projectUserService.list(new QueryWrapper<ProjectUser>().lambda()
+            projectIndxUserService.remove(new QueryWrapper<ProjectIndxUser>().lambda()
+                    .eq(ProjectIndxUser::getProjectId, projectId));
+            projectUserService.remove(new QueryWrapper<ProjectUser>().lambda()
                     .eq(ProjectUser::getProjectId, projectId));
-            userIds = projectUserList.stream().map(ProjectUser::getUserId).collect(Collectors.toList());
+            reportIndxService.remove(new QueryWrapper<ProjectIndx>().lambda()
+                    .eq(ProjectIndx::getProjectId, projectId));
+            projectService.removeById(projectId);
         } catch (Exception e) {
-            return ResponseUtil.serverProblem(new Exception("与项目有关用户获取失败"));
-        }
-
-        JSONObject response = new JSONObject();
-        response.put("userList", userList);
-        response.put("userIds", userIds);*/
+            return ResponseUtil.serverProblem(new Exception("删除失败"));
+        }*/
 
         return R.ok();
     }
@@ -251,33 +236,6 @@ public class ReportController extends AbstractController {
             }
         } catch (Exception e) {
             return ResponseUtil.serverProblem(new Exception("保存失败"));
-        }*/
-
-        return R.ok();
-    }
-
-    /*
-     * 删除报告
-     */
-    @Transactional
-    @RequestMapping("/deleteReports")
-    public R deleteReports(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-
-        if (StringUtils.isEmpty(projectId)) {
-            return ResponseUtil.deletedArgumentValue("项目");
-        }
-
-        try {
-            projectIndxUserService.remove(new QueryWrapper<ProjectIndxUser>().lambda()
-                    .eq(ProjectIndxUser::getProjectId, projectId));
-            projectUserService.remove(new QueryWrapper<ProjectUser>().lambda()
-                    .eq(ProjectUser::getProjectId, projectId));
-            reportIndxService.remove(new QueryWrapper<ProjectIndx>().lambda()
-                    .eq(ProjectIndx::getProjectId, projectId));
-            projectService.removeById(projectId);
-        } catch (Exception e) {
-            return ResponseUtil.serverProblem(new Exception("删除失败"));
         }*/
 
         return R.ok();

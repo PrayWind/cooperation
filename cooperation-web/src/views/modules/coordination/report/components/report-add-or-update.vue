@@ -23,7 +23,6 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="负责人" prop="leader" class="label-style">
-          <!-- <el-input v-model="dataForm.leader" type="password" placeholder="确认密码"></el-input> -->
           <el-select v-model="dataForm.leader" placeholder="请选择负责人">
             <el-option
               v-for="item in users"
@@ -43,7 +42,6 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="开始日期" prop="createTime" class="label-style">
-          <!-- <el-input v-model="dataForm.createTime" placeholder="邮箱"></el-input> -->
           <el-date-picker
             v-model="dataForm.createTime"
             type="date"
@@ -75,7 +73,11 @@
       </span>
     </el-dialog>
     <!-- 弹窗, 新增 / 修改 -->
-    <IndxAddOrUpdate v-if="indxAddOrUpdateVisible" ref="indxAddOrUpdate"></IndxAddOrUpdate>
+    <IndxAddOrUpdate
+      v-if="indxAddOrUpdateVisible"
+      ref="indxAddOrUpdate"
+      @updateIndxList="updateIndxList"
+    ></IndxAddOrUpdate>
   </div>
 </template>
 
@@ -92,15 +94,16 @@ export default {
       indxAddOrUpdateVisible: false,
       users: [],
       dataForm: {
-        id: "",
+        id: 0,
         name: "",
+        reportInfo: "",
         leader: "",
-        projectInfo: "",
+        type: "",
         createTime: "",
         predictTime: "",
-        indx: "1",
-        type: ""
+        status: ""
       },
+      selectedIndxList: [],
       dataRule: {
         name: [
           { required: true, message: "请输入报告名称", trigger: "blur" },
@@ -120,13 +123,6 @@ export default {
           {
             required: true,
             message: "请选择日期",
-            trigger: "change"
-          }
-        ],
-        indx: [
-          {
-            required: true,
-            message: "请添加指标",
             trigger: "change"
           }
         ]
@@ -172,8 +168,13 @@ export default {
         this.$refs["dataForm"].resetFields();
       });
 
-      // 获取users
+      // 获取系统所有用户
       this.getUsers();
+
+      if (this.dataForm.id != 0) {
+        // 获取报告下的所有指标，只有修改报告时才获取
+        this.getIndxs();
+      }
 
       if (this.dataForm.id) {
         this.$http({
@@ -186,8 +187,10 @@ export default {
             this.dataForm.reportInfo = data.report.reportInfo;
             // 必须转成整型，el-select标签才能识别
             this.dataForm.leader = parseInt(data.report.leader);
+            this.dataForm.type = data.report.type;
             this.dataForm.createTime = data.report.createTime;
             this.dataForm.predictTime = data.report.predictTime;
+            this.dataForm.status = data.report.status;
           }
         });
       }
@@ -205,12 +208,32 @@ export default {
       });
     },
 
+    getIndxs() {
+      this.$http({
+        url: this.$http.adornUrl("/report/indxs"),
+        method: "get",
+        params: this.$http.adornParams({
+          reportId: this.dataForm.id
+        })
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          if (data.hasOwnProperty("indxs")) {
+            this.selectedIndxList = data.indxs;
+          }
+        }
+      });
+    },
+
     indxAddOrUpdate(id) {
-      // this.$refs.addIndxDialog.dialogOpen();
       this.indxAddOrUpdateVisible = true;
       this.$nextTick(() => {
         this.$refs.indxAddOrUpdate.init(id);
       });
+    },
+
+    // 接收子组件传来的 指标数组
+    updateIndxList(val) {
+      this.selectedIndxList = val;
     },
 
     // 表单提交
@@ -219,18 +242,12 @@ export default {
         if (valid) {
           this.$http({
             url: this.$http.adornUrl(
-              `/${!this.dataForm.id ? "save" : "update"}`
+              `/report/${!this.dataForm.id ? "save" : "update"}`
             ),
             method: "post",
             data: this.$http.adornData({
-              userId: this.dataForm.id || undefined,
-              username: this.dataForm.userName,
-              password: this.dataForm.password,
-              salt: this.dataForm.salt,
-              email: this.dataForm.email,
-              mobile: this.dataForm.mobile,
-              status: this.dataForm.status,
-              roleIdList: this.dataForm.roleIdList
+              dataForm: this.dataForm,
+              selectedIndxList: this.selectedIndxList
             })
           }).then(({ data }) => {
             if (data && data.code === 0) {
@@ -240,6 +257,7 @@ export default {
                 duration: 1500,
                 onClose: () => {
                   this.visible = false;
+                  this.selectedIndxList = [];
                   this.$emit("refreshDataList");
                 }
               });

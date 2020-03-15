@@ -12,5 +12,7 @@ import java.util.Map;
 public interface ReportService extends IService<ReportEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    Integer insertReport(ReportEntity report);
 }
 

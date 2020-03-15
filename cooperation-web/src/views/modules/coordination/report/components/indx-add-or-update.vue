@@ -63,6 +63,16 @@ export default {
       this.reportId = id || 0;
       this.visible = true;
 
+      // 清除上次数据
+      this.$nextTick(() => {
+        this.dataForm.search = ""
+        this.pageIndex = 1;
+        this.pageSize = 10;
+        this.tableData = [];
+        this.multipleSelection = [];
+        this.reportId = 0;
+      });
+
       this.getDataList();
     },
 
@@ -124,40 +134,8 @@ export default {
 
     // 表单提交
     dataFormSubmit() {
-      this.$refs["dataForm"].validate(valid => {
-        if (valid) {
-          this.$http({
-            url: this.$http.adornUrl(
-              `/${!this.dataForm.id ? "save" : "update"}`
-            ),
-            method: "post",
-            data: this.$http.adornData({
-              userId: this.dataForm.id || undefined,
-              username: this.dataForm.userName,
-              password: this.dataForm.password,
-              salt: this.dataForm.salt,
-              email: this.dataForm.email,
-              mobile: this.dataForm.mobile,
-              status: this.dataForm.status,
-              roleIdList: this.dataForm.roleIdList
-            })
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: "操作成功",
-                type: "success",
-                duration: 1500,
-                onClose: () => {
-                  this.visible = false;
-                  this.$emit("refreshDataList");
-                }
-              });
-            } else {
-              this.$message.error(data.msg);
-            }
-          });
-        }
-      });
+      this.$emit("updateIndxList", this.multipleSelection);
+      this.visible = false;
     }
   }
 };

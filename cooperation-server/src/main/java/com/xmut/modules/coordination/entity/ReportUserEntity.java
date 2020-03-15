@@ -19,16 +19,16 @@ public class ReportUserEntity implements Serializable {
 	 * id
 	 */
 	@TableId
-	private String id;
+	private Long id;
 
 	/**
 	 * 用户id
 	 */
-	private String userId;
+	private Long userId;
 
 	/**
 	 * 报告id
 	 */
-	private String reportId;
+	private Long reportId;
 
 }

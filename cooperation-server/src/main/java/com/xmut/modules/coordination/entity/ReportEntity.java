@@ -1,5 +1,6 @@
 package com.xmut.modules.coordination.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -20,7 +21,7 @@ public class ReportEntity implements Serializable {
      * 报告id
      */
     @TableId
-    private String id;
+    private Long id;
 
     /**
      * 报告名称

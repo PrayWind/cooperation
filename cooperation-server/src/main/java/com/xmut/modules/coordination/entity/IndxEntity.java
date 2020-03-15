@@ -19,7 +19,7 @@ public class IndxEntity implements Serializable {
 	 * 指标id
 	 */
 	@TableId
-	private String id;
+	private Long id;
 
 	/**
 	 * 指标名称

@@ -27,4 +27,9 @@ public class ReportServiceImpl extends ServiceImpl<ReportDao, ReportEntity> impl
         return new PageUtils(page);
     }
 
+    @Override
+    public Integer insertReport(ReportEntity report) {
+        return baseMapper.insertReport(report);
+    }
+
 }

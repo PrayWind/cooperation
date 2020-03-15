@@ -19,15 +19,15 @@ public class UserOfficeEntity implements Serializable {
 	 * 主键
 	 */
 	@TableId
-	private String id;
+	private Long id;
 	/**
 	 * 用户id
 	 */
-	private String userId;
+	private Long userId;
 	/**
-	 * office账号id
+	 * office id
 	 */
-	private String officeId;
+	private Long officeId;
 	/**
 	 * 预留字段
 	 */

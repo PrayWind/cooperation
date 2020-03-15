@@ -19,7 +19,7 @@ public class OfficeEntity implements Serializable {
 	 * 主键
 	 */
 	@TableId
-	private String id;
+	private Long id;
 	/**
 	 * office365账号
 	 */

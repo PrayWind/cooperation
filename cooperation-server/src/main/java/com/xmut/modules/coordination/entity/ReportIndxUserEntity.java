@@ -19,21 +19,21 @@ public class ReportIndxUserEntity implements Serializable {
 	 * 主键
 	 */
 	@TableId
-	private String id;
+	private Long id;
 
 	/**
 	 * 报告id
 	 */
-	private String reportId;
+	private Long reportId;
 
 	/**
 	 * 指标id
 	 */
-	private String indxId;
+	private Long indxId;
 
 	/**
 	 * 执行者id
 	 */
-	private String userId;
+	private Long userId;
 
 }
