@@ -1,3 +1,14 @@
+import http from "@/utils/httpRequest"
+
+// 示例
+// export function getMyInfo() {
+//   return http({
+//     url: http.adornUrl('/sys/user/info'),
+//     method: 'get',
+//     params: http.adornParams()
+//   })
+// }
+
 export function getProjectList(search) {
   const data = { search }
   return request({
