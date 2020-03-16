@@ -42,8 +42,8 @@ public class IndxEntity implements Serializable {
 	private String flag;
 
 	/**
-	 * 预留
+	 * 完成时间
 	 */
-	private String type;
+	private String finishTime;
 
 }

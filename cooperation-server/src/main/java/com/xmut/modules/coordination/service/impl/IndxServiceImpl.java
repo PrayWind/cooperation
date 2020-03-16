@@ -10,6 +10,8 @@ import com.xmut.modules.coordination.entity.IndxEntity;
 import com.xmut.modules.coordination.entity.ReportEntity;
 import com.xmut.modules.coordination.service.IndxService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 
 @Service("indxService")
@@ -25,5 +27,16 @@ public class IndxServiceImpl extends ServiceImpl<IndxDao, IndxEntity> implements
 
         return new PageUtils(page);
     }
+
+    @Override
+    public List<IndxEntity> getIndxsHavePagination(String reportId, String search, Integer start, Integer pageSize) {
+        return baseMapper.getIndxsHavePagination(reportId, search, start, pageSize);
+    }
+
+    @Override
+    public Integer getIndxsCountHavePagination(String reportId, String search, Integer start, Integer pageSize) {
+        return baseMapper.getIndxsCountHavePagination(reportId, search, start, pageSize);
+    }
+
 
 }

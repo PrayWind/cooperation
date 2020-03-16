@@ -47,7 +47,11 @@
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="250" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small">查看</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click.native="$router.push({ name: 'detail', params:{reportId: scope.row.id}})"
+          >查看</el-button>
           <el-button
             v-if="isAuth('sys:user:update')"
             type="primary"
@@ -58,7 +62,7 @@
             v-if="isAuth('sys:user:delete')"
             type="primary"
             size="small"
-            @click="deleteHandle(scope.row.userId)"
+            @click="deleteHandle(scope.row.id)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -152,13 +156,15 @@ export default {
     },
     // 删除
     deleteHandle(id) {
-      var userIds = id
+      var reportIds = id
         ? [id]
         : this.dataListSelections.map(item => {
-            return item.userId;
+            return item.id;
           });
       this.$confirm(
-        `确定对[id=${userIds.join(",")}]进行[${id ? "删除" : "批量删除"}]操作?`,
+        `确定对 [id=${reportIds.join(",")}] 进行 [${
+          id ? "删除" : "批量删除"
+        }] 操作?`,
         "提示",
         {
           confirmButtonText: "确定",
@@ -168,9 +174,9 @@ export default {
       )
         .then(() => {
           this.$http({
-            url: this.$http.adornUrl("/sys/user/delete"),
+            url: this.$http.adornUrl("/report/delete"),
             method: "post",
-            data: this.$http.adornData(userIds, false)
+            data: this.$http.adornData(reportIds, false)
           }).then(({ data }) => {
             if (data && data.code === 0) {
               this.$message({
@@ -188,52 +194,6 @@ export default {
         })
         .catch(() => {});
     }
-    // //展示所有项目信息
-    // list() {
-    //   this.loading = true;
-    //   reports
-    //     .getProjectList(this.search)
-    //     .then(response => {
-    //       this.loading = false;
-    //       this.items = response.data.data;
-    //     })
-    //     .catch();
-    // },
-    // //添加项目
-    // addReport() {
-    //   // 清空对象属性
-    //   this.$refs.addReportDialog.dialogOpen();
-    // },
-    // //添加项目成员
-    // addPerson(projectId) {
-    //   this.$refs.addPersonDialog.dialogOpen(projectId);
-    // },
-    // //删除项目
-    // deleteReports(projectId) {
-    //   this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
-    //     confirmButtonText: "确定",
-    //     cancelButtonText: "取消",
-    //     type: "warning"
-    //   })
-    //     .then(() =>
-    //       reports
-    //         .deleteReports(projectId)
-    //         .then(res => {
-    //           this.$message({
-    //             type: "success",
-    //             message: "删除成功!"
-    //           });
-    //           this.list();
-    //         })
-    //         .catch(err => {})
-    //     )
-    //     .catch(() => {
-    //       this.$message({
-    //         type: "info",
-    //         message: "已取消删除"
-    //       });
-    //     });
-    // }
   }
 };
 </script>
@@ -241,72 +201,4 @@ export default {
 <style lang='scss' scoped>
 //@import url(); 引入公共css类
 //左部分样式
-.left-part {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  line-height: 25px; //行间距
-  font-size: 15px;
-  height: 50px;
-  width: 40%;
-  float: left;
-  .above {
-    color: #1890ff !important;
-  }
-}
-//中间部分样式
-.middle-part {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  line-height: 25px; //行间距
-  font-size: 15px;
-  height: 50px;
-  width: 40%;
-  margin-left: 20px;
-  float: left;
-  .middle-1 {
-    width: 80px;
-    float: left;
-  }
-  .middle-2 {
-    width: 90px;
-    float: left;
-    margin-left: 30px;
-  }
-}
-//右部分样式
-.right-part {
-  padding-top: 20px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  font-size: 15px;
-  height: 50px;
-  width: 15%;
-  float: right;
-  .right-1 {
-    float: left;
-    .icon {
-      float: left;
-      vertical-align: middle;
-      cursor: pointer;
-      &:hover {
-        color: #1890ff;
-      }
-    }
-  }
-  .divider {
-    float: left;
-  }
-}
-//清除浮动
-.clear {
-  clear: both;
-}
-.above {
-  color: rgb(140, 140, 140);
-}
-.down {
-  color: rgb(140, 140, 140);
-}
 </style>

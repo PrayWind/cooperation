@@ -5,9 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xmut.common.utils.PageUtils;
 import com.xmut.common.utils.R;
-import com.xmut.modules.coordination.entity.IndxEntity;
-import com.xmut.modules.coordination.entity.ReportEntity;
-import com.xmut.modules.coordination.entity.ReportIndxEntity;
+import com.xmut.modules.coordination.entity.*;
 import com.xmut.modules.coordination.service.*;
 import com.xmut.modules.sys.controller.AbstractController;
 import com.xmut.modules.sys.entity.SysUserEntity;
@@ -17,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +38,9 @@ public class ReportController extends AbstractController {
 
     @Autowired
     private ReportIndxService reportIndxService;
+
+    @Autowired
+    private ReportIndxUserService reportIndxUserService;
 
     @Autowired
     private ReportUserService reportUserService;
@@ -77,7 +76,7 @@ public class ReportController extends AbstractController {
     }
 
     /*
-     * 获取报告下的所有指标
+     * 获取报告下的所有指标，只是有用到
      */
     @GetMapping("/indxs")
     public R indxs(@RequestParam Map<String, Object> params) {
@@ -178,65 +177,20 @@ public class ReportController extends AbstractController {
      * 删除报告
      */
     @Transactional
-    @RequestMapping("/deleteReports")
-    public R deleteReports(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-
-        if (StringUtils.isEmpty(projectId)) {
-            return ResponseUtil.deletedArgumentValue("项目");
+    @PostMapping("/delete")
+    public R delete(@RequestBody List<Long> reportIds) {
+        // 要删除与报告有关的所有数据
+        for (Long temp : reportIds) {
+            reportIndxUserService.remove(new QueryWrapper<ReportIndxUserEntity>().lambda()
+                    .eq(ReportIndxUserEntity::getReportId, temp));
+            reportIndxService.remove(new QueryWrapper<ReportIndxEntity>().lambda()
+                    .eq(ReportIndxEntity::getReportId, temp));
+            reportUserService.remove(new QueryWrapper<ReportUserEntity>().lambda()
+                    .eq(ReportUserEntity::getReportId, temp));
         }
 
-        try {
-            projectIndxUserService.remove(new QueryWrapper<ProjectIndxUser>().lambda()
-                    .eq(ProjectIndxUser::getProjectId, projectId));
-            projectUserService.remove(new QueryWrapper<ProjectUser>().lambda()
-                    .eq(ProjectUser::getProjectId, projectId));
-            reportIndxService.remove(new QueryWrapper<ProjectIndx>().lambda()
-                    .eq(ProjectIndx::getProjectId, projectId));
-            projectService.removeById(projectId);
-        } catch (Exception e) {
-            return ResponseUtil.serverProblem(new Exception("删除失败"));
-        }*/
+        reportService.removeByIds(reportIds);
 
-        return R.ok();
-    }
-
-    /*
-     * 为报告添加用户
-     */
-    @Transactional
-    @RequestMapping("/addUser")
-    public R addUser(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-        JSONArray userList = data.getJSONArray("userList");
-        List<String> userIds = JSONArray.parseArray(userList.toJSONString(), String.class);
-        ProjectUser projectUser = new ProjectUser();
-        projectUser.setProjectId(projectId);
-
-        if (StringUtils.isEmpty(projectId)) {
-            return ResponseUtil.deletedArgumentValue("项目");
-        }
-
-        *//**
-         * 思路：先删除项目下的所有用户；
-         *      判断前端选择的用户列表（userIds）是否为空，
-         *      空则结束；不空则插入userIds。
-         *//*
-
-        try {
-            projectUserService.remove(new QueryWrapper<ProjectUser>().lambda()
-                    .eq(ProjectUser::getProjectId, projectId));
-            if (ObjectUtils.isNullOrEmpty(userIds)) {
-                return ResponseUtil.ok();
-            }
-            for (String temp : userIds) {
-                projectUser.setId("");
-                projectUser.setUserId(temp);
-                projectUserService.save(projectUser);
-            }
-        } catch (Exception e) {
-            return ResponseUtil.serverProblem(new Exception("保存失败"));
-        }*/
 
         return R.ok();
     }

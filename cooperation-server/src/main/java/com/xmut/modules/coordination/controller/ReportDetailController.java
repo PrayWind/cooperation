@@ -1,10 +1,13 @@
 package com.xmut.modules.coordination.controller;
 
-import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xmut.common.utils.PageUtils;
 import com.xmut.common.utils.R;
+import com.xmut.modules.coordination.entity.IndxEntity;
 import com.xmut.modules.coordination.entity.ReportIndxEntity;
-import com.xmut.modules.coordination.entity.ReportIndxUserEntity;
+import com.xmut.modules.coordination.entity.ReportUserEntity;
 import com.xmut.modules.coordination.service.*;
 import com.xmut.modules.sys.controller.AbstractController;
 import com.xmut.modules.sys.entity.SysUserEntity;
@@ -13,12 +16,12 @@ import com.xmut.modules.sys.service.SysUserRoleService;
 import com.xmut.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @description: 报告协同的报告详情页Controller
@@ -27,166 +30,83 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/reportDetail")
+@RequestMapping("/detail")
 public class ReportDetailController extends AbstractController {
+    @Autowired
+    private ReportService reportService;
 
     @Autowired
-    private ReportIndxUserService projectIndxUserService;
+    private SysUserService sysUserService;
+
+    @Autowired
+    private IndxService indxService;
 
     @Autowired
     private ReportIndxService reportIndxService;
 
     @Autowired
-    private SysUserService userService;
+    private ReportIndxUserService reportIndxUserService;
 
     @Autowired
-    private SysRoleService roleService;
+    private ReportUserService reportUserService;
 
-    @Autowired
-    private ReportUserService projectUserService;
-
-    @Autowired
-    private SysUserRoleService userRoleService;
-
-    /**
-     * 根据用户角色获取模板
+    /*
+     * 获取报告下的所有指标，这个方法与ReportController里的不同
      */
-    @RequestMapping("/templetList")
-    public R templetList(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-        String search = data.getString("search");
-        String userId = getUserId() + "";
+    @GetMapping("/list")
+    public R list(@RequestParam Map<String, Object> params) {
+        String reportId = (String) params.get("reportId");
+        String search = (String) params.get("search");
+        Integer pageIndex = Integer.parseInt((String) params.get("page"));
+        Integer pageSize = Integer.parseInt((String) params.get("limit"));
+        Integer start = (pageIndex-1) * pageSize;
 
-        List<TempletEntity> templetList = new ArrayList<TempletEntity>();
-        TempletEntity templet = null;
-        List<ReportIndxEntity> projectIndxList = null;
-        ReportIndxEntity projectIndx = null;
-        List<SysUserEntity> executors = null;
-        List<String> ids = null;
-        List<ReportIndxUserEntity> projectIndxUserList = null;
+        List<IndxEntity> indxs = indxService.getIndxsHavePagination(reportId, search, start, pageSize);
+        Integer totalCount = indxService.getIndxsCountHavePagination(reportId, search, start, pageSize);
+        PageUtils page = new PageUtils(indxs, totalCount, pageSize, pageIndex);
 
-        if (StringUtils.isEmpty(userId)) {
-            return R.error("未登录");
+        return R.ok().put("page", page);
+    }
+
+    /*
+     * 获取报告成员
+     */
+    @Transactional
+    @GetMapping("/reportUsers/{reportId}")
+    public R reportUsers(@PathVariable("reportId") String reportId) {
+        List<SysUserEntity> userList = sysUserService.list();
+        List<ReportUserEntity> reportUserList = reportUserService.list(new QueryWrapper<ReportUserEntity>()
+                .lambda().eq(ReportUserEntity::getReportId, reportId));
+        if (ObjectUtils.isEmpty(reportUserList)) {
+            return R.ok().put("userList", userList);
         }
-        if (StringUtils.isEmpty(projectId)) {
-            return R.error("报告已删除或不存在");
-        }
-*/
-        // 判断是否是管理员"coordinationAdmin"
-        /*Role role1 = roleService.getOne(new QueryWrapper<Role>().lambda().eq(Role::getCode, "coordinationAdmin"));
-        if (ObjectUtils.isNullOrEmpty(role1)) {
-            return ResponseUtil.deletedArgumentValue("角色");
-        }
-        UserRole userRole1 = userRoleService.getOne(new QueryWrapper<UserRole>().lambda()
-                .eq(UserRole::getUserId, userId)
-                .eq(UserRole::getRoleId, role1.getId()));
 
-        // 判断是否是普通员工"coordinationUser"
-        Role role2 = roleService.getOne(new QueryWrapper<Role>().lambda().eq(Role::getCode, "coordinationUser"));
-        if (ObjectUtils.isNullOrEmpty(role2)) {
-            return ResponseUtil.deletedArgumentValue("角色");
-        }
-        UserRole userRole2 = userRoleService.getOne(new QueryWrapper<UserRole>().lambda()
-                .eq(UserRole::getUserId, userId)
-                .eq(UserRole::getRoleId, role2.getId()));
+        List<Long> selectedUserIds = reportUserList.stream().map(ReportUserEntity::getUserId).collect(Collectors.toList());
 
-        // 查询模板
-        Boolean searchIsEmpty = StringUtils.isEmpty(search);
-        if (!ObjectUtils.isNullOrEmpty(userRole1)) {
-            // 按管理员查询，看到报告已添加的所有模板
-            // 1) 根据PROJECT_ID，获取TB_PROJECT_INDX表数据，需要里面的优先级和状态
-            projectIndxList = reportIndxService.list(new QueryWrapper<ProjectIndx>().lambda().eq(ProjectIndx::getProjectId, projectId));
-            // 2) 获取模板等数据
-            for (int i = 0; i < projectIndxList.size(); i++) {
-                ProjectIndx temp = projectIndxList.get(i);
-                // 根据IndxTreeId和TempletId（这两个才能确定模板）获取模板
-                templet = templetService.getTempletByIndxTreeIdAndTempletId(temp.getIndxTreeId(), temp.getTempletId());
-                if (searchIsEmpty || (!searchIsEmpty && com.cn.uddata.core.utils.StringUtils.isContain(templet.getName(), search))) {
-                    // 在TB_PROJECT_INDX_USER根据ProjectId、IndxTreeId和TempletId（这三个才能确定user）获取USER_ID列表
-                    // TB_PROJECT_INDX的FLAG字段表示该模板是否已被分配，分配1未分配0
-                    if ("1".equals(temp.getTempletFlag())) {
-                        projectIndxUserList = projectIndxUserService.list(new QueryWrapper<ProjectIndxUser>().lambda()
-                                .eq(ProjectIndxUser::getProjectId, projectId)
-                                .eq(ProjectIndxUser::getIndxTreeId, temp.getIndxTreeId())
-                                .eq(ProjectIndxUser::getTempletId, temp.getTempletId()));
-                        ids = projectIndxUserList.stream().map(ProjectIndxUser::getUserId).collect(Collectors.toList());
-                        executors = (List<User>) userService.listByIds(ids);
-                    } else {
-                        executors = new ArrayList<User>();
-                    }
-                    templet.setExecutors(executors);
-                    templet.setExecutorName(UserUtils.getUserListName(executors));
-                    templet.setIndxTreeId(temp.getIndxTreeId());
-                    templet.setTempletLevel(temp.getTempletLevel());
-                    templet.setTempletStatus(temp.getTempletStatus());
-                    templet.setRowId(i + 1 + "");
-                    templetList.add(templet);
-                }
-            }
-
-        } else if (!ObjectUtils.isNullOrEmpty(userRole2)) {
-            // 按普通员工查询，看到与自己有关的模板
-            projectIndxUserList = projectIndxUserService.list(new QueryWrapper<ProjectIndxUser>().lambda()
-                    .eq(ProjectIndxUser::getProjectId, projectId)
-                    .eq(ProjectIndxUser::getUserId, userId));
-            ids = new ArrayList<String>();
-            ids.add(userId);
-            executors = (List<User>) userService.listByIds(ids);
-            if (!ObjectUtils.isNullOrEmpty(projectIndxUserList)) {
-                for (int i = 0; i < projectIndxList.size(); i++) {
-                    ProjectIndx temp = projectIndxList.get(i);
-                    templet = templetService.getTempletByIndxTreeIdAndTempletId(temp.getIndxTreeId(), temp.getTempletId());
-                    if (searchIsEmpty || (!searchIsEmpty && com.cn.uddata.core.utils.StringUtils.isContain(templet.getName(), search))) {
-                        projectIndx = reportIndxService.getOne(new QueryWrapper<ProjectIndx>().lambda()
-                                .eq(ProjectIndx::getProjectId, projectId)
-                                .eq(ProjectIndx::getIndxTreeId, temp.getIndxTreeId())
-                                .eq(ProjectIndx::getTempletId, temp.getTempletId()));
-                        templet.setExecutors(executors);
-                        templet.setExecutorName(UserUtils.getUserListName(executors));
-                        templet.setIndxTreeId(temp.getIndxTreeId());
-                        templet.setTempletStatus(projectIndx.getTempletStatus());
-                        templet.setTempletLevel(projectIndx.getTempletLevel());
-                        templet.setRowId(i + 1 + "");
-                        templetList.add(templet);
-                    }
-                }
-            }
-        } else {
-            return ResponseUtil.serverProblem(new Exception("没有权限"));
-        }*/
-
-        return R.ok();
+        return R.ok().put("userList", userList).put("selectedUserIds", selectedUserIds);
     }
 
     /**
-     * 获取项目成员和该模板已经指派的成员
+     * 保存报告成员
      */
     @Transactional
-    @RequestMapping("/projectUserList")
-    public R projectUserList(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-        Templet templet = data.getObject("templet", Templet.class);
+    @RequestMapping("/saveReportUsers")
+    public R saveReportUsers(@RequestBody JSONObject data) {
+        String reportId = data.getString("reportId");
+        reportUserService.remove(new QueryWrapper<ReportUserEntity>().lambda()
+                .eq(ReportUserEntity::getReportId, reportId));
 
-        // 获取项目成员
-        List<ProjectUser> projectUserList = projectUserService.list(new QueryWrapper<ProjectUser>().lambda()
-                .eq(ProjectUser::getProjectId, projectId));
-        if (ObjectUtils.isNullOrEmpty(projectUserList)) {
-            // 此时项目没有成员，但这不是错误
-            return ResponseUtil.ok(new ArrayList<User>());
+        JSONArray array = data.getJSONArray("selectedUserIds");
+        if (!ObjectUtils.isEmpty(array)) {
+            List<Long> userIds = JSONArray.parseArray(array.toJSONString(), Long.class);
+            for (Long temp : userIds) {
+                ReportUserEntity temp1 = new ReportUserEntity();
+                temp1.setReportId(Long.valueOf(reportId));
+                temp1.setUserId(temp);
+                reportUserService.save(temp1);
+            }
         }
-        List<String> ids = projectUserList.stream().map(ProjectUser::getUserId).collect(Collectors.toList());
-        List<User> userList = (List<User>) userService.listByIds(ids);
 
-        // 获取该模板已经指派的成员
-        List<ProjectIndxUser> projectIndxUserList = projectIndxUserService.list(new QueryWrapper<ProjectIndxUser>()
-                .lambda().eq(ProjectIndxUser::getProjectId, projectId)
-                .eq(ProjectIndxUser::getIndxTreeId, templet.getIndxTreeId())
-                .eq(ProjectIndxUser::getTempletId, templet.getId()));
-        List<String> userIds = projectIndxUserList.stream().map(ProjectIndxUser::getUserId).collect(Collectors.toList());
-
-        JSONObject response = new JSONObject();
-        response.put("userList", userList);
-        response.put("userIds", userIds);*/
         return R.ok();
     }
 

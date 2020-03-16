@@ -18,9 +18,10 @@ public class ReportIndxServiceImpl extends ServiceImpl<ReportIndxDao, ReportIndx
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        String reportId = (String) params.get("reportId");
         IPage<ReportIndxEntity> page = this.page(
                 new Query<ReportIndxEntity>().getPage(params),
-                new QueryWrapper<ReportIndxEntity>()
+                new QueryWrapper<ReportIndxEntity>().lambda().eq(ReportIndxEntity::getReportId, reportId)
         );
 
         return new PageUtils(page);
