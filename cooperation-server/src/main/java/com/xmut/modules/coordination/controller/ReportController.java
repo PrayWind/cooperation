@@ -51,6 +51,15 @@ public class ReportController extends AbstractController {
     @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = reportService.queryPage(params);
+        List<ReportEntity> reportList = (List<ReportEntity>) page.getList();
+        if (!ObjectUtils.isEmpty(reportList)) {
+            for (ReportEntity temp : reportList) {
+                SysUserEntity user = sysUserService.getOne(new QueryWrapper<SysUserEntity>().lambda()
+                        .eq(SysUserEntity::getUserId, temp.getLeader()));
+                temp.setLeaderStr(user.getUsername());
+            }
+        }
+        page.setList(reportList);
 
         return R.ok().put("page", page);
     }

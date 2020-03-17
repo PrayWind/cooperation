@@ -92,7 +92,7 @@
 import * as indx from "@/api/coordination/detail/indx";
 import EditIndxDialog from "../components/EditIndxDialog";
 import AddIndxDialog from "../components/AddIndxDialog";
-import SendToUserDialog from "../components/SendToUserDialog";
+import SendToUserDialog from "../components/indx-send-to-user";
 
 export default {
   props: {

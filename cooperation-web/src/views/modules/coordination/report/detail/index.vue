@@ -43,7 +43,7 @@
       ></el-table-column>
       <el-table-column prop="level" label="优先级" width="auto" header-align="center" align="center"></el-table-column>
       <el-table-column
-        prop="executor"
+        prop="executorsStr"
         label="执行者"
         width="auto"
         header-align="center"
@@ -58,13 +58,14 @@
       ></el-table-column>
       <el-table-column prop="status" label="状态" header-align="center" align="center">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === '0'" size="small" type="danger">进行中</el-tag>
-          <el-tag v-else size="small">完成</el-tag>
+          <el-tag v-if="scope.row.status === '2'" size="small" type="success">完成</el-tag>
+          <el-tag v-else-if="scope.row.status === '1'" size="small" type="info">进行中</el-tag>
+          <el-tag v-else size="small" type="danger">未分配</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="250" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="sendToUser()">分配</el-button>
+          <el-button type="primary" size="small" @click="sendToUser(scope.row.id)">分配</el-button>
           <el-button type="primary" size="small" @click="statusChange()">状态管理</el-button>
         </template>
       </el-table-column>
@@ -79,15 +80,17 @@
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
     <UserAddOrRemove ref="userAddOrRemove"></UserAddOrRemove>
+    <IndxSendToUser ref="indxSendToUser" @refreshDataList="getDataList"></IndxSendToUser>
   </div>
 </template>
 
 <script>
 import * as coordination from "@/api/coordination/coordination";
 import UserAddOrRemove from "./components/user-add-or-remove";
+import IndxSendToUser from "./components/indx-send-to-user";
 
 export default {
-  components: { UserAddOrRemove },
+  components: { UserAddOrRemove, IndxSendToUser },
   data() {
     return {
       reportId: 0,
@@ -147,7 +150,9 @@ export default {
     },
 
     // 分配指标
-    sendToUser() {},
+    sendToUser(id) {
+      this.$refs.indxSendToUser.dialogOpen(this.reportId, id);
+    },
 
     // 状态管理
     statusChange() {},

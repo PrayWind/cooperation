@@ -1,12 +1,15 @@
 package com.xmut.modules.coordination.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import com.xmut.modules.sys.entity.SysUserEntity;
 import lombok.Data;
 
 /**
@@ -36,7 +39,7 @@ public class ReportEntity implements Serializable {
     /**
      * 报告负责人
      */
-    private String leader;
+    private Long leader;
 
     /**
      * 报告类型，预留字段
@@ -62,4 +65,10 @@ public class ReportEntity implements Serializable {
      * 报告状态，进行中完成01
      */
     private String status;
+
+    /*
+     * 负责人字符串，在报告页有用到
+     */
+    @TableField(exist = false)
+    private String leaderStr;
 }

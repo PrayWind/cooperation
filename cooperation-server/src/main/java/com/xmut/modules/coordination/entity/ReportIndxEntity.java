@@ -30,4 +30,14 @@ public class ReportIndxEntity implements Serializable {
 	 * 指标id
 	 */
 	private Long indxId;
+
+	/**
+	 * 指标状态，未分配0 进行中1 完成2，进行中表示已分配
+	 */
+	private String status;
+
+	/**
+	 * 完成时间
+	 */
+	private String finishTime;
 }

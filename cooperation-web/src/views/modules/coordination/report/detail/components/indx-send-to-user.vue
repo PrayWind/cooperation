@@ -1,7 +1,7 @@
 <template>
-  <el-dialog title="成员管理" :visible.sync="dialogVisible" :close-on-click-modal="false">
+  <el-dialog title="指标分配" :visible.sync="dialogVisible" :close-on-click-modal="false">
     <center>
-      <el-select v-model="selectedUserIds" placeholder="请选择" multiple>
+      <el-select v-model="sentUserIds" placeholder="请选择" multiple>
         <el-option
           v-for="item in userList"
           :key="item.userId"
@@ -12,7 +12,7 @@
     </center>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="saveReportUsers()">确 定</el-button>
+      <el-button type="primary" @click="saveSentUsers()">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -24,16 +24,18 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      reportId: "",
+      reportId: 0,
+      indxId: 0,
       userList: [],
-      selectedUserIds: []
+      sentUserIds: []
     };
   },
 
   //方法集合
   methods: {
-    dialogOpen(id) {
-      this.reportId = id;
+    dialogOpen(id1, id2) {
+      this.reportId = id1;
+      this.indxId = id2;
       this.dialogVisible = true;
 
       this.getUserList();
@@ -41,26 +43,30 @@ export default {
 
     getUserList() {
       this.$http({
-        url: this.$http.adornUrl(`/detail/reportUsers/${this.reportId}`),
+        url: this.$http.adornUrl("/detail/sentUsers"),
         method: "get",
-        params: this.$http.adornParams()
+        params: this.$http.adornParams({
+          reportId: this.reportId,
+          indxId: this.indxId
+        })
       }).then(({ data }) => {
         if (data && data.code === 0) {
           this.userList = data.userList;
-          if (data.hasOwnProperty("selectedUserIds")) {
-            this.selectedUserIds = data.selectedUserIds;
+          if (data.hasOwnProperty("sentUserIds")) {
+            this.sentUserIds = data.sentUserIds;
           }
         }
       });
     },
 
-    saveReportUsers() {
+    saveSentUsers() {
       this.$http({
-        url: this.$http.adornUrl("/detail/saveReportUsers"),
+        url: this.$http.adornUrl("/detail/saveSentUsers"),
         method: "post",
         data: this.$http.adornData({
-          selectedUserIds: this.selectedUserIds,
-          reportId: this.reportId
+          sentUserIds: this.sentUserIds,
+          reportId: this.reportId,
+          indxId: this.indxId
         })
       }).then(({ data }) => {
         if (data && data.code === 0) {
@@ -71,7 +77,8 @@ export default {
             onClose: () => {
               this.dialogVisible = false;
               this.userList = [];
-              this.selectedUserIds = [];
+              this.sentUserIds = [];
+              this.$emit("refreshDataList");
             }
           });
         } else {

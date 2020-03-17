@@ -31,7 +31,7 @@
       <el-table-column prop="id" header-align="center" align="center" width="80" label="ID"></el-table-column>
       <el-table-column prop="name" header-align="center" align="center" label="报告名称"></el-table-column>
       <el-table-column prop="reportInfo" header-align="center" align="center" label="简介"></el-table-column>
-      <el-table-column prop="leader" header-align="center" align="center" label="负责人"></el-table-column>
+      <el-table-column prop="leaderStr" header-align="center" align="center" label="负责人"></el-table-column>
       <el-table-column
         prop="createTime"
         header-align="center"
@@ -41,8 +41,8 @@
       ></el-table-column>
       <el-table-column prop="status" header-align="center" align="center" label="状态">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === '0'" size="small" type="danger">进行中</el-tag>
-          <el-tag v-else size="small">完成</el-tag>
+          <el-tag v-if="scope.row.status === '1'" size="small" type="success">完成</el-tag>
+          <el-tag v-else size="small" type="info">进行中</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="250" label="操作">
