@@ -58,8 +58,9 @@ public class ShiroConfig {
         filterMap.put("/swagger-ui.html", "anon");
         filterMap.put("/swagger-resources/**", "anon");
         filterMap.put("/captcha.jpg", "anon");
-        filterMap.put("/aaa.txt", "anon");
+//        filterMap.put("/aaa.txt", "anon");
         filterMap.put("/avatar/**", "anon"); // 这是放行静态资源avatar文件夹
+        filterMap.put("/office/**", "anon");
         filterMap.put("/**", "oauth2");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 

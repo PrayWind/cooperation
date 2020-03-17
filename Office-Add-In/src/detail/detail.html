@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+</head>
+
+<body>
+    <div id="detail">
+    <center>
+        <el-button @click="toReport()">返回报告列表</el-button>
+        <el-button @click="logout()">退出登录</el-button><br><br>
+        <el-table size="small" :data="dataList" row-key="id" highlight-current-row>
+            <el-table-column align="center" width="auto" prop="name" label="指标名称" show-overflow-tooltip ></el-table-column>
+            <el-table-column align="center" width="auto" prop="executorsStr" label="执行者" show-overflow-tooltip ></el-table-column>
+            <el-table-column align="center" width="auto" prop="status" label="状态">
+                <template slot-scope="scope">
+                    <el-tag v-if="scope.row.status === '2'" size="small" type="success">完成</el-tag>
+                    <el-tag v-else-if="scope.row.status === '1'" size="small" type="info">进行中</el-tag>
+                    <el-tag v-else size="small" type="danger">未分配</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="操作">
+                <template slot-scope="scope">
+                <el-button type="primary" size="small" @click="statusChange(scope.row)">完成</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+            @size-change="sizeChangeHandle"
+            @current-change="currentChangeHandle"
+            :current-page="pageIndex"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            :total="totalPage"
+            layout="total, sizes, prev, pager, next, jumper"
+        ></el-pagination>   
+    </center>
+    </div>
+</body>
+
+
+<!-- 引入Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+<!-- 引入ElementUI -->
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<!-- 引入axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<!-- 引入router -->
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+<!-- 引入jQuery -->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script>
+var vm3 = new Vue({
+    el: '#detail',
+    data: {
+        dataForm: {
+            search: ""
+        },
+        pageIndex: 1,
+        pageSize: 10,
+        totalPage: 0,
+        dataList: [],
+    },
+
+    created: function() {
+        var that = this;
+        if (null == localStorage.getItem("reportId")) {
+            that.$message.error("请重新选择报告");
+            window.location.href = 'report.html';
+        }
+        that.getDataList();
+    },
+
+    methods: {
+        getDataList: function() {
+            var that = this
+            axios({
+                method: 'get',
+                url: '/detail/list',
+                params: {
+                    page: that.pageIndex,
+                    limit: that.pageSize,
+                    search: that.dataForm.search,
+                    reportId: localStorage.getItem("reportId")
+                },
+                headers: { 'token': localStorage.getItem("token") }
+            }).then(function (data) {
+                if (data.data.code === 0) {
+                    that.dataList = data.data.page.list;
+                    that.totalPage = data.data.page.totalCount;
+                    console.log("&&&&", that.dataList)
+                } else {
+                    that.dataList = [];
+                    that.totalPage = 0;
+                    that.$message.error(data.data.msg);
+                }
+            })
+        },
+
+        toReport: function() {
+            localStorage.removeItem("reportId");
+            window.location.href = 'report.html'
+        },
+
+        logout: function() {
+            localStorage.clear();
+            window.location.href = 'taskpane.html'
+        },
+
+        // 状态管理，改变状态为完成
+        statusChange: function(row) {
+            var that = this
+            axios({
+                method: 'post',
+                url: '/detail/statusChange',
+                data: {
+                    reportId: localStorage.getItem("reportId"),
+                    indxId: row.id
+                },
+                headers: { 'token': localStorage.getItem("token") }
+            }).then(function (data) {
+                if (data.data.code === 0) {
+                    that.$message.success("操作成功！");
+                    // 改变状态为2，只是表面现象，如果把pageSize来回调一次就会变回去，
+                    // 这应该是Office插件内核版本或是其他原因导致的（在Chrome里就会改变，而Office插件里就不变）
+                    row.status = '2';
+                } else {
+                    that.$message.error(data.data.msg);
+                }
+            })
+        },
+
+        // 每页数
+        sizeChangeHandle: function(val) {
+            var that = this
+            that.pageSize = val;
+            that.pageIndex = 1;
+            that.getDataList();
+        },
+
+        // 当前页
+        currentChangeHandle: function(val) {
+            var that = this
+            that.pageIndex = val;
+            that.getDataList();
+        }
+    }
+})
+</script>
+
+</html>

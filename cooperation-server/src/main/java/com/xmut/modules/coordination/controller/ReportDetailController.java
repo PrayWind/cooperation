@@ -3,6 +3,7 @@ package com.xmut.modules.coordination.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xmut.common.utils.DateUtils;
 import com.xmut.common.utils.ElseUtils;
 import com.xmut.common.utils.PageUtils;
 import com.xmut.common.utils.R;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -180,178 +182,44 @@ public class ReportDetailController extends AbstractController {
                 reportIndxUserService.save(temp1);
             }
             // 指派完后得把tb_report_indx的STATUS字段改为1，说明已分配（状态1表示进行中==已分配）
-            ReportIndxEntity reportIndxEntity = reportIndxService.getOne(new QueryWrapper<ReportIndxEntity>().lambda()
+            ReportIndxEntity reportIndx = reportIndxService.getOne(new QueryWrapper<ReportIndxEntity>().lambda()
                     .eq(ReportIndxEntity::getReportId, reportId).eq(ReportIndxEntity::getIndxId, indxId));
-            reportIndxEntity.setStatus("1");
-            reportIndxService.updateById(reportIndxEntity);
+            reportIndx.setStatus("1");
+            reportIndx.setFinishTime("");
+            reportIndxService.updateById(reportIndx);
 
             return R.ok();
         }
 
         // 如果执行这部分，说明指标还没指派，所以得把tb_report_indx的STATUS字段改为0，表示未分配
-        ReportIndxEntity reportIndxEntity = reportIndxService.getOne(new QueryWrapper<ReportIndxEntity>().lambda()
+        ReportIndxEntity reportIndx = reportIndxService.getOne(new QueryWrapper<ReportIndxEntity>().lambda()
                 .eq(ReportIndxEntity::getReportId, reportId).eq(ReportIndxEntity::getIndxId, indxId));
-        reportIndxEntity.setStatus("0");
-        reportIndxService.updateById(reportIndxEntity);
+        reportIndx.setStatus("0");
+        reportIndx.setFinishTime("");
+        reportIndxService.updateById(reportIndx);
 
         return R.ok();
     }
-
-
-
-
 
     /**
-     * 指派模板给user
+     * 报告详情页点击完成，网页和office插件均适用
      */
     @Transactional
-    @RequestMapping("/sendToUser")
-    public R sendToUser(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-        JSONArray userIds = data.getJSONArray("userIds");
-        Templet templet = data.getObject("templet", Templet.class);
-        List<String> ids = JSONArray.parseArray(userIds.toJSONString(), String.class);
-
-        if (StringUtils.isEmpty(projectId)) {
-            return ResponseUtil.deletedArgumentValue("项目");
+    @RequestMapping("/statusChange")
+    public R statusChange(@RequestBody JSONObject data) {
+        String reportId = data.getString("reportId");
+        String indxId = data.getString("indxId");
+        ReportIndxEntity reportIndx = reportIndxService.getOne(new QueryWrapper<ReportIndxEntity>().lambda()
+                .eq(ReportIndxEntity::getReportId, reportId).eq(ReportIndxEntity::getIndxId, indxId));
+        if ("0".equals(reportIndx.getStatus())) {
+            return R.error("该指标还未分配！");
         }
-
-        *//**
-         * 思路：先删除所有分配的用户；
-         *      判断前端选择的用户列表（userIds）是否为空，
-         *      空则结束；不空则插入userIds。
-         *//*
-        // 删除所有用户
-        projectIndxUserService.remove(new QueryWrapper<ProjectIndxUser>().lambda()
-                .eq(ProjectIndxUser::getProjectId, projectId)
-                .eq(ProjectIndxUser::getIndxTreeId, templet.getIndxTreeId())
-                .eq(ProjectIndxUser::getTempletId, templet.getId()));
-
-        if (ObjectUtils.isNullOrEmpty(ids)) {
-            // 删除操作
-            // 修改TB_PROJECT_USER表TEMPLET_FLAG字段为0，表示未分配
-            ProjectIndx projectIndx = new ProjectIndx();
-            projectIndx.setTempletFlag("0");
-            reportIndxService.update(projectIndx, new QueryWrapper<ProjectIndx>().lambda()
-                    .eq(ProjectIndx::getProjectId, projectId)
-                    .eq(ProjectIndx::getIndxTreeId, templet.getIndxTreeId())
-                    .eq(ProjectIndx::getTempletId, templet.getId()));
-
-            return ResponseUtil.ok();
+        if ("2".equals(reportIndx.getStatus())) {
+            return R.error("该指标已完成！");
         }
-
-        // 修改TB_PROJECT_USER表TEMPLET_FLAG字段为1，表示已分配
-        ProjectIndx projectIndx = new ProjectIndx();
-        projectIndx.setTempletFlag("1");
-        reportIndxService.update(projectIndx, new QueryWrapper<ProjectIndx>().lambda()
-                .eq(ProjectIndx::getProjectId, projectId)
-                .eq(ProjectIndx::getIndxTreeId, templet.getIndxTreeId())
-                .eq(ProjectIndx::getTempletId, templet.getId()));
-
-        // 插入用户到数据库
-        List<User> userList = (List<User>) userService.listByIds(ids);
-        ProjectIndxUser saveData = new ProjectIndxUser();
-        saveData.setProjectId(projectId);
-        saveData.setIndxTreeId(templet.getIndxTreeId());
-        saveData.setTempletId(templet.getId());
-        for (User temp : userList) {
-            // 插入操作
-            try {
-                saveData.setId("");
-                saveData.setUserId(temp.getId());
-                projectIndxUserService.save(saveData);
-            } catch (Exception e) {
-                return ResponseUtil.serverProblem(new Exception("数据插入失败"));
-            }
-        }*/
-
-        return R.ok();
-    }
-
-    /*
-     * 获取可选择的模板（除去已经选择的模板）
-     */
-    @RequestMapping("/selectTemplet")
-    public R selectTemplet(@RequestBody JSONObject data) {
-        /*String indxTreeId = data.getString("indxTreeId");
-        String projectId = data.getString("projectId");
-        Templet templet = null;
-        List<Templet> templetList = new ArrayList<Templet>();
-        List<Templet> selectedTempletList = new ArrayList<Templet>();
-        List<IndxTemplet> indxTempletList = null;
-        ProjectIndx projectIndx = null;
-
-        // 获取指标下的模板
-        indxTempletList = indxTempletService.list(new QueryWrapper<IndxTemplet>().lambda().eq(IndxTemplet::getIndxTreeId, indxTreeId));
-        for (IndxTemplet temp : indxTempletList) {
-            projectIndx = reportIndxService.getOne(new QueryWrapper<ProjectIndx>().lambda()
-                    .eq(ProjectIndx::getProjectId, projectId)
-                    .eq(ProjectIndx::getIndxTreeId, indxTreeId)
-                    .eq(ProjectIndx::getTempletId, temp.getTempletId()));
-            try {
-                templet = templetService.getById(temp.getTempletId());
-                templet.setIndxTreeId(temp.getIndxTreeId());
-            } catch (Exception e) {
-                ResponseUtil.deletedArgumentValue("模板");
-            }
-            if (ObjectUtils.isNullOrEmpty(projectIndx)) {
-                templetList.add(templet);
-            } else {
-                selectedTempletList.add(templet);
-            }
-        }*/
-
-//        JSONObject response = new JSONObject();
-//        response.put("templetList", templetList);
-//        response.put("selectedTempletList", selectedTempletList);
-        return R.ok();
-    }
-
-    /*
-     * 保存已选择的模板
-     */
-    @RequestMapping("/saveSelectedTemplet")
-    public R saveSelectedTemplet(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-        JSONArray templetList = data.getJSONArray("templetList");
-        List<Templet> selectTempletList = JSONArray.parseArray(templetList.toJSONString(), Templet.class);
-        ProjectIndx projectIndx = new ProjectIndx();
-        projectIndx.setProjectId(projectId);
-
-        if (StringUtils.isEmpty(projectId)) {
-            return ResponseUtil.deletedArgumentValue("项目");
-        }
-
-        for (Templet temp : selectTempletList) {
-            projectIndx.setId("");
-            projectIndx.setIndxTreeId(temp.getIndxTreeId());
-            projectIndx.setTempletId(temp.getId());
-            try {
-                reportIndxService.save(projectIndx);
-            } catch (Exception e) {
-                return ResponseUtil.serverProblem(new Exception("保存失败"));
-            }
-        }*/
-
-        return R.ok();
-    }
-
-    /*
-     * 在Office365中点击 模板完成
-     */
-    @RequestMapping("/finishTemplet")
-    public R finishTemplet(@RequestBody JSONObject data) {
-        /*String projectId = data.getString("projectId");
-        JSONObject object = data.getJSONObject("templet");
-        String templetId = object.getString("id");
-        String indxTreeId = object.getString("indxTreeId");
-
-        ProjectIndx projectIndx = reportIndxService.getOne(new QueryWrapper<ProjectIndx>().lambda()
-                .eq(ProjectIndx::getProjectId, projectId)
-                .eq(ProjectIndx::getTempletId, templetId)
-                .eq(ProjectIndx::getIndxTreeId, indxTreeId));
-        projectIndx.setTempletStatus("1");
-        reportIndxService.updateById(projectIndx);*/
+        reportIndx.setStatus("2");
+        reportIndx.setFinishTime(DateUtils.format(new Date()));
+        reportIndxService.updateById(reportIndx);
 
         return R.ok();
     }

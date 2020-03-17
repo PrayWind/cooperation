@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+</head>
+
+<body>
+    <div id="report">
+    <center>
+        <el-button @click="logout()">退出登录</el-button><br><br>
+        <el-table size="small" :data="reportList" row-key="id" highlight-current-row>
+            <el-table-column align="center" width="auto" prop="name" label="报告名称" show-overflow-tooltip></el-table-column>
+            <el-table-column align="center" width="auto" prop="leaderStr" label="负责人" show-overflow-tooltip></el-table-column>
+            <el-table-column align="center" label="操作">
+                <template slot-scope="scope">
+                    <el-button type="primary" size="small" @click="openReport(scope.row.id)">打开</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+            @size-change="sizeChangeHandle"
+            @current-change="currentChangeHandle"
+            :current-page="pageIndex"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            :total="totalPage"
+            layout="total, sizes, prev, pager, next, jumper"
+        ></el-pagination>
+    </center>
+    </div>
+</body>
+
+
+<!-- 引入Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+<!-- 引入ElementUI -->
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<!-- 引入axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<!-- 引入router -->
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+
+<!-- 引入jQuery -->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script>
+var vm2 = new Vue({
+    el: '#report',
+    data: {
+        dataForm: {
+            search: ""
+        },
+        pageIndex: 1,
+        pageSize: 10,
+        totalPage: 0,
+        reportList: []
+    },
+
+    created: function() {
+        var that = this;
+        that.getDataList();
+    },
+
+    methods: {
+        getDataList: function() {
+            var that = this
+            axios({
+                method: 'get',
+                url: '/report/list',
+                params: {
+                    page: that.pageIndex,
+                    limit: that.pageSize,
+                    search: that.dataForm.search
+                },
+                headers: { 'token': localStorage.getItem("token") }
+            }).then(function (data) {
+                if (data.data.code === 0) {
+                    that.reportList = data.data.page.list;
+                    that.totalPage = data.data.page.totalCount;
+                } else {
+                    // 进到这里说明token失效了，所以要清除localStorage，让用户重新登录
+                    that.logout();
+                    that.reportList = [];
+                    that.totalPage = 0;
+                    that.$message.error(data.data.msg);
+                }
+            })
+        },
+
+        logout: function() {
+            localStorage.clear();
+            window.location.href = 'taskpane.html'
+        },
+
+        openReport: function(reportId) {
+            localStorage.setItem("reportId", reportId);
+            window.location.href = 'detail.html'
+        },
+
+        // 每页数
+        sizeChangeHandle: function(val) {
+            var that = this
+            that.pageSize = val;
+            that.pageIndex = 1;
+            that.getDataList();
+        },
+        // 当前页
+        currentChangeHandle: function(val) {
+            var that = this
+            that.pageIndex = val;
+            that.getDataList();
+        }
+    }
+})
+</script>
+
+</html>

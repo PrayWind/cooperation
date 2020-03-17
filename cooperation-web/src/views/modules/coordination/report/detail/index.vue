@@ -66,7 +66,7 @@
       <el-table-column fixed="right" header-align="center" align="center" width="250" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="sendToUser(scope.row.id)">分配</el-button>
-          <el-button type="primary" size="small" @click="statusChange()">状态管理</el-button>
+          <el-button type="primary" size="small" @click="statusChange(scope.row.id)">完成</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -154,8 +154,30 @@ export default {
       this.$refs.indxSendToUser.dialogOpen(this.reportId, id);
     },
 
-    // 状态管理
-    statusChange() {},
+    // 状态管理，改变状态为完成
+    statusChange(id) {
+      this.$http({
+        url: this.$http.adornUrl("/detail/statusChange"),
+        method: "post",
+        data: this.$http.adornData({
+          reportId: this.reportId,
+          indxId: id
+        })
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.$message({
+            message: "操作成功",
+            type: "success",
+            duration: 1500,
+            onClose: () => {
+              this.getDataList();
+            }
+          });
+        } else {
+          this.$message.error(data.msg);
+        }
+      });
+    },
 
     // 每页数
     sizeChangeHandle(val) {

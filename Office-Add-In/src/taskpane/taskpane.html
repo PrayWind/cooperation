@@ -56,41 +56,43 @@
 <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 
 <script> 
-    var vm1 = new Vue({
-        el: '#login',
-        data: {
-            msg: '登录页面',
-            loginForm: {
-                username: 'uddatays@uddata.partner.onmschina.cn',
-                password: 'Abc123..'
-            }
-        },
-
-        methods: {
-            login: function() {
-                var that = this
-                axios({
-                    method: 'post',
-                    url: '/office/login',
-                    data: {
-                        username: this.loginForm.username,
-                        password: this.loginForm.password
-                    }
-                }).then(function (response) {
-                    localStorage.setItem("X-Token", response.data.data)
-                    that.msg = response.data.data
-                    window.location.href = 'project.html';
-                }).catch(function (error) { // 请求失败处理
-                    this.$message.error("账号或密码错误！");
-                });
-            }
-        },
-
-        created: function() {
-            if (null != localStorage.getItem("X-Token")) {
-                window.location.href = 'project.html';
-            }
+var vm1 = new Vue({
+    el: '#login',
+    data: {
+        msg: '登录页面',
+        else: "",
+        loginForm: {
+            username: "",
+            password: ""
         }
-    })
+    },
+
+    created: function() {
+        if (null != localStorage.getItem("token")) {
+            window.location.href = 'report.html';
+        }
+    },
+
+    methods: {
+        login: function() {
+            var that = this
+            axios({
+                method: 'post',
+                url: '/office/login',
+                data: {
+                    username: this.loginForm.username,
+                    password: this.loginForm.password
+                }
+            }).then(function (data) {
+                if (data.data.code === 0) {
+                    localStorage.setItem("token", data.data.token);
+                    window.location.href = 'report.html';
+                } else {
+                    that.$message.error(data.data.msg);
+                }
+            })
+        }
+    }
+})
 </script>    
 </html>

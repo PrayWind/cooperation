@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- *
- * https://www.renren.io
- *
- * 版权所有，侵权必究！
- */
-
 package com.xmut.modules.sys.controller;
 
 import com.xmut.common.utils.R;
@@ -31,8 +23,6 @@ import java.util.Map;
 
 /**
  * 登录相关
- *
- * @author Mark sunlightcs@gmail.com
  */
 @RestController
 public class SysLoginController extends AbstractController {
@@ -73,7 +63,7 @@ public class SysLoginController extends AbstractController {
 		SysUserEntity user = sysUserService.queryByUserName(form.getUsername());
 
 		//账号不存在、密码错误
-		if(user == null || !user.getPassword().equals(new Sha256Hash(form.getPassword(), user.getSalt()).toHex())) {
+		if(null == user || !user.getPassword().equals(new Sha256Hash(form.getPassword(), user.getSalt()).toHex())) {
 			return R.error("账号或密码不正确");
 		}
 

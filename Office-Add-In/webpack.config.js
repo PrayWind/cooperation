@@ -13,7 +13,6 @@ module.exports = async (env, options) => {
       polyfill: "@babel/polyfill",
       taskpane: "./src/taskpane/taskpane.js",
       commands: "./src/commands/commands.js",
-      home: "./src/home/home.js"
     },
     resolve: {
       extensions: [".ts", ".tsx", ".html", ".js"]
@@ -60,19 +59,14 @@ module.exports = async (env, options) => {
         chunks: ["polyfill", "commands"]
       }),
       new HtmlWebpackPlugin({
-          filename: "home.html",
-          template: "./src/home/home.html",
-          chunks: ["polyfill", "home"]
+        filename: "report.html",
+        template: "./src/report/report.html",
+        chunks: ["polyfill", "report"]
       }),
       new HtmlWebpackPlugin({
-        filename: "project.html",
-        template: "./src/project/project.html",
-        chunks: ["polyfill", "project"]
-      }),
-      new HtmlWebpackPlugin({
-        filename: "templet.html",
-        template: "./src/templet/templet.html",
-        chunks: ["polyfill", "templet"]
+        filename: "detail.html",
+        template: "./src/detail/detail.html",
+        chunks: ["polyfill", "detail"]
       })
     ],
     devServer: {
@@ -84,25 +78,25 @@ module.exports = async (env, options) => {
       proxy: [
         {
           context: ['/office/login'],
-          target: 'http://localhost:8089',
+          target: 'http://localhost:8002/cooperation-server/',
           changeOrigin: true,
           secure: false
         },
         {
           context: ['/office/*'],
-          target: 'http://localhost:8089',
+          target: 'http://localhost:8002/cooperation-server/',
           changeOrigin: true,
           secure: false
         },
         {
-          context: ['/reports/*'],
-          target: 'http://localhost:8089',
+          context: ['/report/*'],
+          target: 'http://localhost:8002/cooperation-server/',
           changeOrigin: true,
           secure: false
         },
         {
-          context: ['/reportDetail/*'],
-          target: 'http://localhost:8089',
+          context: ['/detail/*'],
+          target: 'http://localhost:8002/cooperation-server/',
           changeOrigin: true,
           secure: false
         }   
