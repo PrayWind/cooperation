@@ -6,8 +6,6 @@ import com.xmut.common.utils.R;
 
 /**
  * 用户Token
- *
- * @author Mark sunlightcs@gmail.com
  */
 public interface SysUserTokenService extends IService<SysUserTokenEntity> {
 

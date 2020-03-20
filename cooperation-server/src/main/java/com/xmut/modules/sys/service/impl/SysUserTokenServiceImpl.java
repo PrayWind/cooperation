@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-
 @Service("sysUserTokenService")
 public class SysUserTokenServiceImpl extends ServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
 	//12小时后过期

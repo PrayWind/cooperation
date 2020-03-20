@@ -19,9 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @description: 报告协同的报告部分Controller
- * @author: whf
- * @date: 2019-10-11 08:50:11
+ * 报告部分Controller
  */
 
 @RestController

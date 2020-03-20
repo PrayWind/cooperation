@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- *
- * https://www.renren.io
- *
- * 版权所有，侵权必究！
- */
-
 package com.xmut.config;
 
 import io.swagger.annotations.ApiOperation;
@@ -45,9 +37,9 @@ public class SwaggerConfig implements WebMvcConfigurer {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("人人开源")
-            .description("renren-fast文档")
-            .termsOfServiceUrl("https://www.renren.io")
+            .title("接口")
+            .description("api文档")
+            .termsOfServiceUrl("http://localhost:8002/cooperation-server/")
             .version("3.0.0")
             .build();
     }

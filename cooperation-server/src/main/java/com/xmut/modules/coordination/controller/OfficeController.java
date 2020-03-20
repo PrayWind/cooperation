@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Office插件部分Controller
+ */
+
 @RestController
 @RequestMapping("/office")
 public class OfficeController {
@@ -28,23 +32,6 @@ public class OfficeController {
 
     @Autowired
     private SysUserTokenService sysUserTokenService;
-
-    /**
-     * 测试方法
-     */
-    @RequestMapping("/test")
-    public String test() {
-
-        String test = "测试测试";
-
-        return test;
-    }
-
-//    @RequestMapping("/user")
-//    public Object userList() {
-//        List<User> userList = userService.list();
-//        return userList;
-//    }
 
     /**
      * 登录验证

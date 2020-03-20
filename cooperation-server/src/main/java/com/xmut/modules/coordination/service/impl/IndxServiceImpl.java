@@ -7,7 +7,6 @@ import com.xmut.common.utils.PageUtils;
 import com.xmut.common.utils.Query;
 import com.xmut.modules.coordination.dao.IndxDao;
 import com.xmut.modules.coordination.entity.IndxEntity;
-import com.xmut.modules.coordination.entity.ReportEntity;
 import com.xmut.modules.coordination.service.IndxService;
 import org.springframework.stereotype.Service;
 

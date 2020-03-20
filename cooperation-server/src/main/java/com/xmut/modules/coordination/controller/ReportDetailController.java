@@ -14,8 +14,6 @@ import com.xmut.modules.coordination.entity.ReportUserEntity;
 import com.xmut.modules.coordination.service.*;
 import com.xmut.modules.sys.controller.AbstractController;
 import com.xmut.modules.sys.entity.SysUserEntity;
-import com.xmut.modules.sys.service.SysRoleService;
-import com.xmut.modules.sys.service.SysUserRoleService;
 import com.xmut.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @description: 报告协同的报告详情页Controller
- * @author: whf
- * @date: 2019-10-11 11:52:53
+ * 报告详情页Controller
  */
 
 @RestController

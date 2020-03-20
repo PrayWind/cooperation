@@ -9,6 +9,10 @@ import java.util.List;
  */
 public class ElseUtils {
 
+    /*
+     * ReportDetailController的list方法用到，主要是把
+     * 多个用户的用户名拼接成 “admin、test” 这种形式的字符串
+     */
     public static String formatExecutors(List<SysUserEntity> executors) {
         if (executors.size() == 1) {
             return executors.get(0).getUsername();

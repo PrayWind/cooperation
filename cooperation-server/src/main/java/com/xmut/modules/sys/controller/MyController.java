@@ -11,9 +11,7 @@ import java.io.FileOutputStream;
 import java.util.UUID;
 
 /**
- * @description: 个人信息页面
- * @author: whf
- * @date: 2020-1-28 11:42:43
+ * 个人信息页面
  */
 
 @RestController

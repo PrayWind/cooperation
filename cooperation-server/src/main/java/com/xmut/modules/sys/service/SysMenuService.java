@@ -8,17 +8,13 @@
 
 package com.xmut.modules.sys.service;
 
-
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xmut.modules.sys.entity.SysMenuEntity;
 
 import java.util.List;
 
-
 /**
  * 菜单管理
- *
- * @author Mark sunlightcs@gmail.com
  */
 public interface SysMenuService extends IService<SysMenuEntity> {
 

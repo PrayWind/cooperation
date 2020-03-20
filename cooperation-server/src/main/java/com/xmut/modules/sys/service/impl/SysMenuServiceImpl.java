@@ -1,13 +1,4 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- *
- * https://www.renren.io
- *
- * 版权所有，侵权必究！
- */
-
 package com.xmut.modules.sys.service.impl;
-
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xmut.modules.sys.dao.SysMenuDao;
@@ -22,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Service("sysMenuService")
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> implements SysMenuService {
