@@ -33,9 +33,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/detail")
 public class ReportDetailController extends AbstractController {
     @Autowired
-    private ReportService reportService;
-
-    @Autowired
     private SysUserService sysUserService;
 
     @Autowired

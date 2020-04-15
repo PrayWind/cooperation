@@ -12,8 +12,22 @@
 <body>
     <div id="report">
     <center>
-        <el-button @click="logout()">退出登录</el-button><br><br>
-        <el-table size="small" :data="reportList" row-key="id" highlight-current-row>
+        <el-button type="danger" @click="logout()">退出登录</el-button><br><br>
+        <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+            <el-form-item>
+                <el-input
+                v-model="dataForm.search"
+                size="small"
+                placeholder="请输入报告名称"
+                prefix-icon="el-icon-search"
+                clearable
+                ></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" size="small" @click="getDataList()">查询</el-button>
+            </el-form-item>
+        </el-form>
+        <el-table style="margin-top: -10px;" size="small" :data="reportList" row-key="id" highlight-current-row border>
             <el-table-column align="center" width="auto" prop="name" label="报告名称" show-overflow-tooltip></el-table-column>
             <el-table-column align="center" width="auto" prop="leaderStr" label="负责人" show-overflow-tooltip></el-table-column>
             <el-table-column align="center" label="操作">

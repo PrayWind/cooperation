@@ -7,7 +7,7 @@
           <p class="brand-info__intro">报告写作是一个用于解决XXX公司内部文档管理的系统。</p>
         </div>
         <div class="login-main">
-          <h3 class="login-title">管理员登录</h3>
+          <h3 class="login-title">登录</h3>
           <el-form
             :model="dataForm"
             :rules="dataRule"

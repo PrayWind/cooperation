@@ -12,9 +12,23 @@
 <body>
     <div id="detail">
     <center>
-        <el-button @click="toReport()">返回报告列表</el-button>
-        <el-button @click="logout()">退出登录</el-button><br><br>
-        <el-table size="small" :data="dataList" row-key="id" highlight-current-row>
+        <el-button type="primary" @click="toReport()">返回报告列表</el-button>
+        <el-button type="danger" @click="logout()">退出登录</el-button><br><br>
+        <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+            <el-form-item>
+                <el-input
+                v-model="dataForm.search"
+                size="small"
+                placeholder="请输入指标名称"
+                prefix-icon="el-icon-search"
+                clearable
+                ></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" size="small" @click="getDataList()">查询</el-button>
+            </el-form-item>
+        </el-form>
+        <el-table style="margin-top: -10px;" size="small" :data="dataList" row-key="id" highlight-current-row border>
             <el-table-column align="center" width="auto" prop="name" label="指标名称" show-overflow-tooltip ></el-table-column>
             <el-table-column align="center" width="auto" prop="executorsStr" label="执行者" show-overflow-tooltip ></el-table-column>
             <el-table-column align="center" width="auto" prop="status" label="状态">
@@ -101,7 +115,6 @@ var vm3 = new Vue({
                 if (data.data.code === 0) {
                     that.dataList = data.data.page.list;
                     that.totalPage = data.data.page.totalCount;
-                    console.log("&&&&", that.dataList)
                 } else {
                     that.dataList = [];
                     that.totalPage = 0;
