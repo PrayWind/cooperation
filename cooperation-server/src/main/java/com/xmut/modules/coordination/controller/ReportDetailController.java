@@ -7,10 +7,7 @@ import com.xmut.common.utils.DateUtils;
 import com.xmut.common.utils.ElseUtils;
 import com.xmut.common.utils.PageUtils;
 import com.xmut.common.utils.R;
-import com.xmut.modules.coordination.entity.IndxEntity;
-import com.xmut.modules.coordination.entity.ReportIndxEntity;
-import com.xmut.modules.coordination.entity.ReportIndxUserEntity;
-import com.xmut.modules.coordination.entity.ReportUserEntity;
+import com.xmut.modules.coordination.entity.*;
 import com.xmut.modules.coordination.service.*;
 import com.xmut.modules.sys.controller.AbstractController;
 import com.xmut.modules.sys.entity.SysUserEntity;
@@ -39,6 +36,9 @@ public class ReportDetailController extends AbstractController {
     private IndxService indxService;
 
     @Autowired
+    private ReportService reportService;
+
+    @Autowired
     private ReportIndxService reportIndxService;
 
     @Autowired
@@ -56,7 +56,7 @@ public class ReportDetailController extends AbstractController {
         String search = (String) params.get("search");
         Integer pageIndex = Integer.parseInt((String) params.get("page"));
         Integer pageSize = Integer.parseInt((String) params.get("limit"));
-        Integer start = (pageIndex-1) * pageSize;
+        Integer start = (pageIndex - 1) * pageSize;
 
         List<IndxEntity> indxs = indxService.getIndxsHavePagination(reportId, search, start, pageSize);
         Integer totalCount = indxService.getIndxsCountHavePagination(reportId, search, start, pageSize);
@@ -164,6 +164,13 @@ public class ReportDetailController extends AbstractController {
                 .eq(ReportIndxUserEntity::getReportId, reportId)
                 .eq(ReportIndxUserEntity::getIndxId, indxId));
 
+        // 指派指标的时候，报告状态改为 进行中0
+        ReportEntity report = reportService.getOne(new QueryWrapper<ReportEntity>().lambda()
+                .eq(ReportEntity::getId, reportId));
+        report.setStatus("0");
+        report.setFinishTime("");
+        reportService.updateById(report);
+
         JSONArray array = data.getJSONArray("sentUserIds");
         if (!ObjectUtils.isEmpty(array)) {
             List<Long> sentUserIds = JSONArray.parseArray(array.toJSONString(), Long.class);
@@ -213,6 +220,24 @@ public class ReportDetailController extends AbstractController {
         reportIndx.setStatus("2");
         reportIndx.setFinishTime(DateUtils.format(new Date()));
         reportIndxService.updateById(reportIndx);
+
+        // 如果一个报告写的指标都完成了，说明报告也完成了，需要修改报告的状态
+        List<ReportIndxEntity> reportIndxList = reportIndxService.list(new QueryWrapper<ReportIndxEntity>()
+                .lambda().eq(ReportIndxEntity::getReportId, reportId));
+        int flag = 1;
+        for (ReportIndxEntity temp : reportIndxList) {
+            if (!"2".equals(temp.getStatus())) {
+                flag = 0;
+                break;
+            }
+        }
+        if (1 == flag) {
+            ReportEntity report = reportService.getOne(new QueryWrapper<ReportEntity>().lambda()
+                    .eq(ReportEntity::getId, reportId));
+            report.setStatus("1");
+            report.setFinishTime(DateUtils.format(new Date()));
+            reportService.updateById(report);
+        }
 
         return R.ok();
     }

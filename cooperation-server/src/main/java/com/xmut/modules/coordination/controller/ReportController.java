@@ -138,6 +138,12 @@ public class ReportController extends AbstractController {
         // 插入数据后，已插入数据的主键直接注入到report对象
         reportService.insertReport(report);
 
+        // 负责人默认是报告成员
+        ReportUserEntity reportUser = new ReportUserEntity();
+        reportUser.setUserId(report.getLeader());
+        reportUser.setReportId(report.getId());
+        reportUserService.save(reportUser);
+
         JSONArray array = data.getJSONArray("selectedIndxList");
         if (!ObjectUtils.isEmpty(array)) {
             List<IndxEntity> selectedIndxList = JSONArray.parseArray(array.toJSONString(), IndxEntity.class);
@@ -161,7 +167,18 @@ public class ReportController extends AbstractController {
     public R update(@RequestBody JSONObject data) {
         JSONObject object = data.getJSONObject("dataForm");
         ReportEntity report = JSONObject.toJavaObject(object, ReportEntity.class);
+        ReportEntity oldReport = reportService.getById(report.getId());
         reportService.updateById(report);
+
+        // 修改负责人，先删除指派给原负责人的指标，再修改
+        reportIndxUserService.remove(new QueryWrapper<ReportIndxUserEntity>().lambda()
+                .eq(ReportIndxUserEntity::getUserId, oldReport.getLeader())
+                .eq(ReportIndxUserEntity::getReportId, oldReport.getId()));
+        ReportUserEntity reportUser = reportUserService.getOne(new QueryWrapper<ReportUserEntity>().lambda()
+                .eq(ReportUserEntity::getUserId, oldReport.getLeader())
+                .eq(ReportUserEntity::getReportId, oldReport.getId()));
+        reportUser.setUserId(report.getLeader());
+        reportUserService.updateById(reportUser);
 
         reportIndxService.remove(new QueryWrapper<ReportIndxEntity>().lambda()
                 .eq(ReportIndxEntity::getReportId, report.getId()));
