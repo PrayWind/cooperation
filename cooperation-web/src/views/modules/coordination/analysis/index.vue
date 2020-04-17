@@ -2,64 +2,57 @@
   <div>
     <el-row :gutter="24">
       <el-col :span="8">
-        <el-card>
+        <el-card style="height: 270px">
           <div slot="header" class="clearfix header-style">
             <span class="header-title-style">报告总数</span>
-            <span class="header-num-style">20</span>
+            <span class="header-num-style">{{ totalReportNum }}</span>
           </div>
-          <div style="margin: -60px 0 25px -20px">
-            <ve-histogram
-              :data="reportData.chartData"
-              :settings="reportData.chartSettings"
-              :extend="chartExtend"
-              height="300px"
-              ref="reportChart"
-            ></ve-histogram>
-          </div>
-          <div class="footer-style" style="margin-top: -90px">
-            <el-divider></el-divider>
+          <ve-histogram
+            :data="reportData.chartData"
+            :settings="reportData.chartSettings"
+            :extend="chartExtend"
+            height="270px"
+            ref="reportChart"
+            style="margin: -50px 0 0 -10px"
+          ></ve-histogram>
+          <div class="footer-style">
             <span class="footer-title-style">本月报告</span>
-            <span class="footer-num-style">10</span>
+            <span class="footer-num-style">{{ currentReportNum }}</span>
           </div>
         </el-card>
       </el-col>
 
       <el-col :span="8">
-        <el-card>
+        <el-card style="height: 270px">
           <div slot="header" class="clearfix header-style">
             <span class="header-title-style">指标总数</span>
-            <span class="header-num-style">20</span>
+            <span class="header-num-style">{{ totalIndxNum }}</span>
           </div>
-          <div style="margin: -60px 0 25px -20px">
-            <ve-line
-              :data="indxData.chartData"
-              :settings="indxData.chartSettings"
-              :extend="chartExtend"
-              height="300px"
-              ref="indxChart"
-            ></ve-line>
-          </div>
-          <div class="footer-style" style="margin-top: -90px">
-            <el-divider></el-divider>
+          <ve-line
+            :data="indxData.chartData"
+            :settings="indxData.chartSettings"
+            :extend="chartExtend"
+            height="270px"
+            ref="indxChart"
+            style="margin: -50px 0 0 -10px"
+          ></ve-line>
+          <div class="footer-style">
             <span class="footer-title-style">本月指标</span>
-            <span class="footer-num-style">10</span>
+            <span class="footer-num-style">{{ currentIndxNum }}</span>
           </div>
         </el-card>
       </el-col>
 
       <el-col :span="8">
-        <el-card>
+        <el-card style="height: 155px">
           <div slot="header" class="clearfix header-style">
-            <span class="header-title-style">整体进度</span>
-            <span class="header-num-style">70%</span>
+            <span class="header-title-style">总进度</span>
+            <span class="header-num-style">{{ totalProcess }}%</span>
           </div>
-          <div>
-            <el-progress :text-inside="true" :stroke-width="26" :percentage="70"></el-progress>
-          </div>
-          <div class="footer-style">
-            <el-divider></el-divider>
+          <el-progress :text-inside="true" :stroke-width="26" :percentage="totalProcess"></el-progress>
+          <div style="margin-top: 15px">
             <span class="footer-title-style">本月进度</span>
-            <span class="footer-num-style">10</span>
+            <span class="footer-num-style">{{ currentProcess }}</span>
           </div>
         </el-card>
       </el-col>
@@ -67,15 +60,15 @@
 
     <el-row>
       <el-col :span="24">
-        <el-card style="margin-top: 20px;">
-          <center style="margin-top:35px">
+        <el-card style="margin-top: 20px; height: 470px">
+          <center style="margin-top: 25px;">
             <span class="header-title-style">各月份报告数和指标数</span>
             <ve-histogram
               :data="totalData.chartData"
               :settings="totalData.chartSettings"
-              height="450px"
+              height="420px"
               width="100%"
-              style="margin-top:5px"
+              style="margin-top:10px"
               ref="totalChart"
             ></ve-histogram>
           </center>
@@ -183,11 +176,36 @@ export default {
             indxNum: "指标数"
           }
         }
-      }
+      },
+      totalReportNum: 0,
+      currentReportNum: 0,
+      totalIndxNum: 0,
+      currentIndxNum: 0,
+      totalProcess: 60,
+      currentProcess: 70
     };
   },
 
+  activated() {
+    this.getDataList();
+  },
+
   methods: {
+    // 获取数据列表
+    getDataList() {
+      this.$http({
+        url: this.$http.adornUrl("/workbench/list"),
+        method: "get",
+        params: this.$http.adornParams({})
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+
+        } else {
+
+        }
+      });
+    },
+
     // 重新加载图表
     reload() {
       console.log("报告分析重新加载");
@@ -203,10 +221,6 @@ export default {
 </script>
 
 <style>
-.item {
-  margin-bottom: 18px;
-}
-
 .clearfix:before,
 .clearfix:after {
   display: table;
@@ -221,7 +235,6 @@ export default {
 }
 
 .header-title-style {
-  color: rgba(0, 0, 0, 0.45);
   font-size: 16px;
 }
 
@@ -229,12 +242,10 @@ export default {
   font-size: 25px;
   margin-left: 5px;
   color: rgba(90, 177, 239);
-  /* color: black; */
 }
 
 .footer-style {
-  margin: -5px 0;
-  line-height: 16px;
+  margin-top: -65px;
 }
 
 .footer-title-style {
@@ -245,6 +256,5 @@ export default {
 .footer-num-style {
   font-size: 20px;
   color: rgba(90, 177, 239);
-  /* color: black; */
 }
 </style>

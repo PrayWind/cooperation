@@ -1,6 +1,6 @@
 <!-- 工作台 -->
 <template>
-  <div class>
+  <div>
     <el-row :gutter="24">
       <el-col :span="12">
         <el-card>
@@ -87,9 +87,11 @@ export default {
       dataListLoading: false
     };
   },
+
   activated() {
     this.getDataList();
   },
+  
   methods: {
     // 获取数据列表
     getDataList() {

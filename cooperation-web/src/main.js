@@ -11,9 +11,11 @@ import '@/assets/css/scrollbar.css'
 import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/axios
 import { isAuth } from '@/utils'
 import cloneDeep from 'lodash/cloneDeep'
+import VCharts from 'v-charts'                // 引入v-charts组件
 
 Vue.use(VueCookie)
 Vue.config.productionTip = false
+Vue.use(VCharts)
 
 // 非生产环境, 适配mockjs模拟数据                 // api: https://github.com/nuysoft/Mock
 if (process.env.NODE_ENV !== 'production') {

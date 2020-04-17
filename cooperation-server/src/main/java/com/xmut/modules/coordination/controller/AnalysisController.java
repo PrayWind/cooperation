@@ -10,9 +10,11 @@ import com.xmut.modules.coordination.entity.workbenchEntity.WorkbenchCurrentRepo
 import com.xmut.modules.coordination.entity.workbenchEntity.WorkbenchCurrentReportIndxEntity;
 import com.xmut.modules.coordination.entity.workbenchEntity.WorkbenchFinishReportEntity;
 import com.xmut.modules.coordination.entity.workbenchEntity.WorkbenchFinishReportIndxEntity;
-import com.xmut.modules.coordination.service.*;
+import com.xmut.modules.coordination.service.IndxService;
+import com.xmut.modules.coordination.service.ReportIndxService;
+import com.xmut.modules.coordination.service.ReportIndxUserService;
+import com.xmut.modules.coordination.service.ReportService;
 import com.xmut.modules.sys.controller.AbstractController;
-import com.xmut.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 工作台部分Controller
+ * 报告分析部分Controller
  */
 
 @RestController
 @RequestMapping("/workbench")
-public class WorkbenchController extends AbstractController {
+public class AnalysisController extends AbstractController {
     @Autowired
     private IndxService indxService;
 
