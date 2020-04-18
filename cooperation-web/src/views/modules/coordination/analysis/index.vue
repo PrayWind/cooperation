@@ -52,7 +52,7 @@
           <el-progress :text-inside="true" :stroke-width="26" :percentage="totalProcess"></el-progress>
           <div style="margin-top: 15px">
             <span class="footer-title-style">本月进度</span>
-            <span class="footer-num-style">{{ currentProcess }}</span>
+            <span class="footer-num-style">{{ currentProcess }}%</span>
           </div>
         </el-card>
       </el-col>
@@ -97,18 +97,18 @@ export default {
         chartData: {
           columns: ["month", "reportNum"],
           rows: [
-            { month: "1月", reportNum: 1 },
-            { month: "2月", reportNum: 2 },
-            { month: "3月", reportNum: 1 },
-            { month: "4月", reportNum: 5 },
-            { month: "5月", reportNum: 1 },
-            { month: "6月", reportNum: 2 },
-            { month: "7月", reportNum: 7 },
-            { month: "8月", reportNum: 5 },
-            { month: "9月", reportNum: 8 },
-            { month: "10月", reportNum: 6 },
-            { month: "11月", reportNum: 3 },
-            { month: "12月", reportNum: 4 }
+            { month: "1月", reportNum: "0" },
+            { month: "2月", reportNum: "0" },
+            { month: "3月", reportNum: "0" },
+            { month: "4月", reportNum: "0" },
+            { month: "5月", reportNum: "0" },
+            { month: "6月", reportNum: "0" },
+            { month: "7月", reportNum: 0 },
+            { month: "8月", reportNum: 0 },
+            { month: "9月", reportNum: 0 },
+            { month: "10月", reportNum: 0 },
+            { month: "11月", reportNum: 0 },
+            { month: "12月", reportNum: 0 }
           ]
         },
         chartSettings: {
@@ -121,18 +121,18 @@ export default {
         chartData: {
           columns: ["month", "indxNum"],
           rows: [
-            { month: "1月", indxNum: 1 },
-            { month: "2月", indxNum: 2 },
-            { month: "3月", indxNum: 1 },
-            { month: "4月", indxNum: 5 },
-            { month: "5月", indxNum: 1 },
-            { month: "6月", indxNum: 2 },
-            { month: "7月", indxNum: 7 },
-            { month: "8月", indxNum: 5 },
-            { month: "9月", indxNum: 8 },
-            { month: "10月", indxNum: 6 },
-            { month: "11月", indxNum: 3 },
-            { month: "12月", indxNum: 4 }
+            { month: "1月", indxNum: "0" },
+            { month: "2月", indxNum: "0" },
+            { month: "3月", indxNum: "0" },
+            { month: "4月", indxNum: "0" },
+            { month: "5月", indxNum: "0" },
+            { month: "6月", indxNum: "0" },
+            { month: "7月", indxNum: 0 },
+            { month: "8月", indxNum: 0 },
+            { month: "9月", indxNum: 0 },
+            { month: "10月", indxNum: 0 },
+            { month: "11月", indxNum: 0 },
+            { month: "12月", indxNum: 0 }
           ]
         },
         chartSettings: {
@@ -152,18 +152,18 @@ export default {
         chartData: {
           columns: ["month", "reportNum", "indxNum"],
           rows: [
-            { month: "1月", reportNum: 1, indxNum: 2 },
-            { month: "2月", reportNum: 1, indxNum: 2 },
-            { month: "3月", reportNum: 1, indxNum: 2 },
-            { month: "4月", reportNum: 1, indxNum: 2 },
-            { month: "5月", reportNum: 1, indxNum: 2 },
-            { month: "6月", reportNum: 1, indxNum: 2 },
-            { month: "7月", reportNum: 1, indxNum: 2 },
-            { month: "8月", reportNum: 1, indxNum: 2 },
-            { month: "9月", reportNum: 1, indxNum: 2 },
-            { month: "10月", reportNum: 1, indxNum: 2 },
-            { month: "11月", reportNum: 1, indxNum: 2 },
-            { month: "12月", reportNum: 1, indxNum: 2 }
+            { month: "1月", reportNum: "0", indxNum: "0" },
+            { month: "2月", reportNum: "0", indxNum: "0" },
+            { month: "3月", reportNum: "0", indxNum: "0" },
+            { month: "4月", reportNum: "0", indxNum: "0" },
+            { month: "5月", reportNum: "0", indxNum: "0" },
+            { month: "6月", reportNum: "0", indxNum: "0" },
+            { month: "7月", reportNum: 0, indxNum: 0 },
+            { month: "8月", reportNum: 0, indxNum: 0 },
+            { month: "9月", reportNum: 0, indxNum: 0 },
+            { month: "10月", reportNum: 0, indxNum: 0 },
+            { month: "11月", reportNum: 0, indxNum: 0 },
+            { month: "12月", reportNum: 0, indxNum: 0 }
           ]
         },
         chartSettings: {
@@ -181,8 +181,8 @@ export default {
       currentReportNum: 0,
       totalIndxNum: 0,
       currentIndxNum: 0,
-      totalProcess: 60,
-      currentProcess: 70
+      totalProcess: 0,
+      currentProcess: 0
     };
   },
 
@@ -194,14 +194,30 @@ export default {
     // 获取数据列表
     getDataList() {
       this.$http({
-        url: this.$http.adornUrl("/workbench/list"),
+        url: this.$http.adornUrl("/analysis/list"),
         method: "get",
         params: this.$http.adornParams({})
       }).then(({ data }) => {
         if (data && data.code === 0) {
-
+          this.reportData.chartData.rows = data.reportData.rows;
+          this.totalReportNum = data.reportData.totalReportNum;
+          this.currentReportNum = data.reportData.currentReportNum;
+          this.indxData.chartData.rows = data.indxData.rows;
+          this.totalIndxNum = data.indxData.totalIndxNum;
+          this.currentIndxNum = data.indxData.currentIndxNum;
+          this.totalProcess = data.processData.totalProcess;
+          this.currentProcess = data.processData.currentProcess;
+          this.totalData.chartData.rows = data.totalData.rows;
         } else {
-
+          this.reportData.chartData.rows = [];
+          this.totalReportNum = 0;
+          this.currentReportNum = 0;
+          this.indxData.chartData.rows = [];
+          this.totalIndxNum = 0;
+          this.currentIndxNum = 0;
+          this.totalProcess = 0;
+          this.currentProcess = 0;
+          this.totalData.chartData.rows = [];
         }
       });
     },

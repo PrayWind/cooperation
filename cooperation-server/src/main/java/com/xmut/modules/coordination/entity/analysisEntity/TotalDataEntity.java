@@ -10,8 +10,8 @@ import java.util.List;
  * 报告分析 - 各月份报告指标部分
  */
 @Data
-public class totalDataEntity implements Serializable {
+public class TotalDataEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-    private List<HashMap> rows;
+    private List<HashMap<String, String>> rows;
 }

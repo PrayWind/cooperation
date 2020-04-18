@@ -7,15 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * 报告分析 - 指标部分
+ * 报告分析 - 完成进度
  */
 @Data
-public class indxDataEntity implements Serializable {
+public class ProcessDataEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Integer totalIndxNum;
+	private String currentProcess;
 
-	private Integer currentIndxNum;
-
-	private List<HashMap> rows;
+	private String totalProcess;
 }

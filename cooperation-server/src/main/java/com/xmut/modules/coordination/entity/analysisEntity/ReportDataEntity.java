@@ -11,12 +11,12 @@ import java.util.Map;
  * 报告分析 - 报告部分
  */
 @Data
-public class reportDataEntity implements Serializable {
+public class ReportDataEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer totalReportNum;
 
 	private Integer currentReportNum;
 
-	private List<HashMap> rows;
+	private List<HashMap<String, String>> rows;
 }
