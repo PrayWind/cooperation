@@ -36,6 +36,8 @@ export default {
     dialogOpen(id1, id2) {
       this.reportId = id1;
       this.indxId = id2;
+      this.userList = [];
+      this.sentUserIds = [];
       this.dialogVisible = true;
 
       this.getUserList();

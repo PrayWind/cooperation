@@ -4,10 +4,13 @@
       <div class="site-content">
         <div class="brand-info">
           <h2 class="brand-info__text">报告协作系统</h2>
-          <p class="brand-info__intro">报告写作是一个用于解决XXX公司内部文档管理的系统。</p>
+          <p class="brand-info__intro">报告写作是一个用于解决XXX公司内文档协作、管理的系统。</p>
         </div>
         <div class="login-main">
-          <h3 class="login-title">登录</h3>
+          <center>
+            <h3 class="login-title">登录</h3>
+          </center>
+
           <el-form
             :model="dataForm"
             :rules="dataRule"

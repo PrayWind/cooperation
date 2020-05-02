@@ -14,7 +14,11 @@
         <el-button @click="getDataList()">查询</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="reportUsers()">成员管理</el-button>
+        <el-button
+          v-if="isAuth('detail:saveReportUsers')"
+          type="primary"
+          @click="reportUsers()"
+        >成员管理</el-button>
       </el-form-item>
     </el-form>
 
@@ -65,8 +69,18 @@
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="250" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="sendToUser(scope.row.id)">分配</el-button>
-          <el-button type="primary" size="small" @click="statusChange(scope.row.id)">完成</el-button>
+          <el-button
+            v-if="isAuth('detail:saveSentUsers')"
+            type="primary"
+            size="small"
+            @click="sendToUser(scope.row.id)"
+          >分配</el-button>
+          <el-button
+            v-if="isAuth('detail:statusChange')"
+            type="primary"
+            size="small"
+            @click="statusChange(scope.row.id)"
+          >完成</el-button>
         </template>
       </el-table-column>
     </el-table>

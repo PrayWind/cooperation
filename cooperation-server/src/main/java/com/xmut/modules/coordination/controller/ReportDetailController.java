@@ -12,6 +12,7 @@ import com.xmut.modules.coordination.service.*;
 import com.xmut.modules.sys.controller.AbstractController;
 import com.xmut.modules.sys.entity.SysUserEntity;
 import com.xmut.modules.sys.service.SysUserService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -51,6 +52,7 @@ public class ReportDetailController extends AbstractController {
      * 获取报告下的所有指标，这个方法与ReportController里的不同
      */
     @GetMapping("/list")
+    @RequiresPermissions("detail:list")
     public R list(@RequestParam Map<String, Object> params) {
         String reportId = (String) params.get("reportId");
         String search = (String) params.get("search");
@@ -103,10 +105,11 @@ public class ReportDetailController extends AbstractController {
     }
 
     /**
-     * 保存报告成员
+     * 保存报告成员（成员管理）
      */
     @Transactional
     @RequestMapping("/saveReportUsers")
+    @RequiresPermissions("detail:saveReportUsers")
     public R saveReportUsers(@RequestBody JSONObject data) {
         String reportId = data.getString("reportId");
         reportUserService.remove(new QueryWrapper<ReportUserEntity>().lambda()
@@ -157,6 +160,7 @@ public class ReportDetailController extends AbstractController {
      */
     @Transactional
     @RequestMapping("/saveSentUsers")
+    @RequiresPermissions("detail:saveSentUsers")
     public R saveSentUsers(@RequestBody JSONObject data) {
         String reportId = data.getString("reportId");
         String indxId = data.getString("indxId");
@@ -206,6 +210,7 @@ public class ReportDetailController extends AbstractController {
      */
     @Transactional
     @RequestMapping("/statusChange")
+    @RequiresPermissions("detail:statusChange")
     public R statusChange(@RequestBody JSONObject data) {
         String reportId = data.getString("reportId");
         String indxId = data.getString("indxId");

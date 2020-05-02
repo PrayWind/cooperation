@@ -11,8 +11,9 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('report:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button
+          v-if="isAuth('report:delete')"
           type="danger"
           @click="deleteHandle()"
           :disabled="dataListSelections.length <= 0"
@@ -53,13 +54,13 @@
             @click.native="$router.push({ name: 'detail', params:{reportId: scope.row.id}})"
           >查看</el-button>
           <el-button
-            v-if="isAuth('sys:user:update')"
+            v-if="isAuth('report:update')"
             type="primary"
             size="small"
             @click="addOrUpdateHandle(scope.row.id)"
           >修改</el-button>
           <el-button
-            v-if="isAuth('sys:user:delete')"
+            v-if="isAuth('report:delete')"
             type="primary"
             size="small"
             @click="deleteHandle(scope.row.id)"
@@ -200,5 +201,4 @@ export default {
 
 <style lang='scss' scoped>
 //@import url(); 引入公共css类
-//左部分样式
 </style>

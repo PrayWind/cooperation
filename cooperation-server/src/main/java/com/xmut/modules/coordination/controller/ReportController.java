@@ -10,6 +10,7 @@ import com.xmut.modules.coordination.service.*;
 import com.xmut.modules.sys.controller.AbstractController;
 import com.xmut.modules.sys.entity.SysUserEntity;
 import com.xmut.modules.sys.service.SysUserService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -47,6 +48,7 @@ public class ReportController extends AbstractController {
      * 获取所有报告
      */
     @GetMapping("/list")
+    @RequiresPermissions("report:list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = reportService.queryPage(params);
         List<ReportEntity> reportList = (List<ReportEntity>) page.getList();
@@ -132,6 +134,7 @@ public class ReportController extends AbstractController {
      */
     @Transactional
     @PostMapping("/save")
+    @RequiresPermissions("report:save")
     public R save(@RequestBody JSONObject data) {
         JSONObject object = data.getJSONObject("dataForm");
         ReportEntity report = JSONObject.toJavaObject(object, ReportEntity.class);
@@ -164,6 +167,7 @@ public class ReportController extends AbstractController {
      */
     @Transactional
     @PostMapping("/update")
+    @RequiresPermissions("report:update")
     public R update(@RequestBody JSONObject data) {
         JSONObject object = data.getJSONObject("dataForm");
         ReportEntity report = JSONObject.toJavaObject(object, ReportEntity.class);
@@ -202,6 +206,7 @@ public class ReportController extends AbstractController {
      */
     @Transactional
     @PostMapping("/delete")
+    @RequiresPermissions("report:delete")
     public R delete(@RequestBody List<Long> reportIds) {
         // 要删除与报告有关的所有数据
         for (Long temp : reportIds) {
