@@ -8,7 +8,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
 
-
 /**
  * 系统用户Token
  */
@@ -20,11 +19,13 @@ public class SysUserTokenEntity implements Serializable {
 	//用户ID
 	@TableId(type = IdType.INPUT)
 	private Long userId;
+
 	//token
 	private String token;
+
 	//过期时间
 	private Date expireTime;
+
 	//更新时间
 	private Date updateTime;
-
 }

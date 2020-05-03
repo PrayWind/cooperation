@@ -194,7 +194,7 @@ export default {
     // 获取数据列表
     getDataList() {
       this.$http({
-        url: this.$http.adornUrl("/analysis/list"),
+        url: this.$http.adornUrl("/reportAnalysis/list"),
         method: "get",
         params: this.$http.adornParams({})
       }).then(({ data }) => {

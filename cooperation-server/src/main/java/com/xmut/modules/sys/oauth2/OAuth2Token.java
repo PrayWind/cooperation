@@ -1,6 +1,5 @@
 package com.xmut.modules.sys.oauth2;
 
-
 import org.apache.shiro.authc.AuthenticationToken;
 
 /**

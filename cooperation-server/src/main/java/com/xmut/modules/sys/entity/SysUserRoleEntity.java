@@ -25,6 +25,4 @@ public class SysUserRoleEntity implements Serializable {
 	 * 角色ID
 	 */
 	private Long roleId;
-
-	
 }

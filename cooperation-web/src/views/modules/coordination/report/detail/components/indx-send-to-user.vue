@@ -18,8 +18,6 @@
 </template>
 
 <script>
-import * as reports from "@/api/coordination/reports";
-
 export default {
   data() {
     return {

@@ -4,9 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xmut.modules.coordination.entity.ReportIndxEntity;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * @author whf
- */
 @Mapper
 public interface ReportIndxDao extends BaseMapper<ReportIndxEntity> {
 	

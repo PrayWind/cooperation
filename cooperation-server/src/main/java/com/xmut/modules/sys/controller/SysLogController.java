@@ -20,6 +20,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/sys/log")
 public class SysLogController {
+
 	@Autowired
 	private SysLogService sysLogService;
 	

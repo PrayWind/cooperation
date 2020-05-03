@@ -7,9 +7,6 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-/**
- * @author whf
- */
 @Mapper
 public interface IndxDao extends BaseMapper<IndxEntity> {
 

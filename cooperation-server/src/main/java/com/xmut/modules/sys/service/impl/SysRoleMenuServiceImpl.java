@@ -44,5 +44,4 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuDao, SysRoleM
 	public int deleteBatch(Long[] roleIds){
 		return baseMapper.deleteBatch(roleIds);
 	}
-
 }

@@ -12,5 +12,4 @@ import java.util.Map;
 public interface SysLogService extends IService<SysLogEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
-
 }

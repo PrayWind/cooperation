@@ -2,17 +2,10 @@ package com.xmut.modules.coordination.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xmut.common.utils.R;
-import com.xmut.modules.coordination.service.OfficeService;
 import com.xmut.modules.sys.entity.SysUserEntity;
 import com.xmut.modules.sys.service.SysUserService;
 import com.xmut.modules.sys.service.SysUserTokenService;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.LockedAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.Sha256Hash;
-import org.apache.shiro.subject.Subject;
-import org.apache.tomcat.util.http.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Office插件部分Controller
  */
-
 @RestController
 @RequestMapping("/office")
 public class OfficeController {

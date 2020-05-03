@@ -16,10 +16,13 @@ import java.util.*;
 
 @Service
 public class ShiroServiceImpl implements ShiroService {
+
     @Autowired
     private SysMenuDao sysMenuDao;
+
     @Autowired
     private SysUserDao sysUserDao;
+
     @Autowired
     private SysUserTokenDao sysUserTokenDao;
 

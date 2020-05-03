@@ -21,8 +21,10 @@ import java.util.Set;
 @RestController
 @RequestMapping("/sys/menu")
 public class SysMenuController extends AbstractController {
+
 	@Autowired
 	private SysMenuService sysMenuService;
+
 	@Autowired
 	private ShiroService shiroService;
 

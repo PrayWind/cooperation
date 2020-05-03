@@ -26,5 +26,4 @@ public class SysRoleMenuEntity implements Serializable {
 	 * 菜单ID
 	 */
 	private Long menuId;
-	
 }

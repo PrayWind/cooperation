@@ -6,9 +6,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 
-/**
- * @author whf
- */
 @Mapper
 public interface ReportDao extends BaseMapper<ReportEntity> {
 

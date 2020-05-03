@@ -28,10 +28,6 @@ public class Constant {
     public static final String ASC = "asc";
 	/**
 	 * 菜单类型
-	 * 
-	 * @author chenshun
-	 * @email sunlightcs@gmail.com
-	 * @date 2016年11月15日 下午1:24:29
 	 */
     public enum MenuType {
         /**
@@ -60,10 +56,6 @@ public class Constant {
     
     /**
      * 定时任务状态
-     * 
-     * @author chenshun
-     * @email sunlightcs@gmail.com
-     * @date 2016年12月3日 上午12:07:22
      */
     public enum ScheduleStatus {
         /**

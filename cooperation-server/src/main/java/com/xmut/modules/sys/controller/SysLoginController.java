@@ -26,10 +26,13 @@ import java.util.Map;
  */
 @RestController
 public class SysLoginController extends AbstractController {
+
 	@Autowired
 	private SysUserService sysUserService;
+
 	@Autowired
 	private SysUserTokenService sysUserTokenService;
+
 	@Autowired
 	private SysCaptchaService sysCaptchaService;
 

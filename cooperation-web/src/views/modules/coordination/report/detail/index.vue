@@ -99,7 +99,6 @@
 </template>
 
 <script>
-import * as coordination from "@/api/coordination/coordination";
 import UserAddOrRemove from "./components/user-add-or-remove";
 import IndxSendToUser from "./components/indx-send-to-user";
 

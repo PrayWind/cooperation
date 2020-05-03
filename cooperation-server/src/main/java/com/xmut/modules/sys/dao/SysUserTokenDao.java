@@ -11,5 +11,4 @@ import org.apache.ibatis.annotations.Mapper;
 public interface SysUserTokenDao extends BaseMapper<SysUserTokenEntity> {
 
     SysUserTokenEntity queryByToken(String token);
-	
 }

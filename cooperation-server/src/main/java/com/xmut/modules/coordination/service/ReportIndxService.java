@@ -6,9 +6,6 @@ import com.xmut.modules.coordination.entity.ReportIndxEntity;
 
 import java.util.Map;
 
-/**
- * @author whf
- */
 public interface ReportIndxService extends IService<ReportIndxEntity> {
 
     PageUtils queryPage(Map<String, Object> params);

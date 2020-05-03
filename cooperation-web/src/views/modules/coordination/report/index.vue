@@ -84,7 +84,6 @@
 </template>
 
 <script>
-import * as reports from "@/api/coordination/reports";
 import AddOrUpdate from "./components/report-add-or-update";
 
 export default {

@@ -6,9 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Data;
 
-/**
- * @author whf
- */
 @Data
 @TableName("tb_report_indx_user")
 public class ReportIndxUserEntity implements Serializable {

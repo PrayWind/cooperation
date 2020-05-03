@@ -95,6 +95,4 @@ public class OAuth2Filter extends AuthenticatingFilter {
 
         return token;
     }
-
-
 }

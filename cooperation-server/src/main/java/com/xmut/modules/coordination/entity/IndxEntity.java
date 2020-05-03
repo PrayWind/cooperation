@@ -9,9 +9,6 @@ import java.util.List;
 import com.xmut.modules.sys.entity.SysUserEntity;
 import lombok.Data;
 
-/**
- * @author whf
- */
 @Data
 @TableName("tb_indx")
 public class IndxEntity implements Serializable {

@@ -16,8 +16,10 @@ import java.util.List;
 
 @Service("sysMenuService")
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> implements SysMenuService {
+
 	@Autowired
 	private SysUserService sysUserService;
+
 	@Autowired
 	private SysRoleMenuService sysRoleMenuService;
 	

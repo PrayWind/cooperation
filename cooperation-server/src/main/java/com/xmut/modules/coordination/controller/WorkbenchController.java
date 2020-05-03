@@ -12,7 +12,6 @@ import com.xmut.modules.coordination.entity.workbenchEntity.WorkbenchFinishRepor
 import com.xmut.modules.coordination.entity.workbenchEntity.WorkbenchFinishReportIndxEntity;
 import com.xmut.modules.coordination.service.*;
 import com.xmut.modules.sys.controller.AbstractController;
-import com.xmut.modules.sys.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

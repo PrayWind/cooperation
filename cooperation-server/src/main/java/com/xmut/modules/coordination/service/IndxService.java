@@ -7,9 +7,6 @@ import com.xmut.modules.coordination.entity.IndxEntity;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author whf
- */
 public interface IndxService extends IService<IndxEntity> {
 
     PageUtils queryPage(Map<String, Object> params);

@@ -7,9 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Data;
 
-/**
- * @author whf
- */
 @Data
 @TableName("tb_report")
 public class ReportEntity implements Serializable {

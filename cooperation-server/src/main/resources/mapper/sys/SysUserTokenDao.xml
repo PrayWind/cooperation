@@ -6,4 +6,5 @@
 	<select id="queryByToken" resultType="com.xmut.modules.sys.entity.SysUserTokenEntity">
 		select * from sys_user_token where token = #{value}
 	</select>
+
 </mapper>

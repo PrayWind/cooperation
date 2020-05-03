@@ -71,5 +71,4 @@ public class SysMenuEntity implements Serializable {
 
 	@TableField(exist=false)
 	private List<?> list;
-
 }
