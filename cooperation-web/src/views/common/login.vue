@@ -126,8 +126,8 @@ export default {
     width: 100%;
     height: 100%;
     content: "";
-    background-image: url(~@/assets/img/login_bg.jpg);
-    background-size: cover;
+    background-image: url(~@/assets/img/login_bg1.jpg);
+    background-size: 75% 100%;
   }
   .site-content__wrapper {
     position: absolute;

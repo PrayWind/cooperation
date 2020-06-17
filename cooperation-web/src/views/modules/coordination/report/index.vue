@@ -28,7 +28,7 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;"
     >
-      <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+      <el-table-column type="selection" header-align="center" align="center" width="65"></el-table-column>
       <el-table-column prop="id" header-align="center" align="center" width="80" label="ID"></el-table-column>
       <el-table-column prop="name" header-align="center" align="center" label="报告名称"></el-table-column>
       <el-table-column prop="reportInfo" header-align="center" align="center" label="简介"></el-table-column>

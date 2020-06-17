@@ -85,7 +85,7 @@ public class ReportController extends AbstractController {
     }
 
     /*
-     * 获取报告下的所有指标，只是有用到
+     * 获取报告下的所有指标，只是有用到（添加或修改报告时用到）
      */
     @GetMapping("/indxs")
     public R indxs(@RequestParam Map<String, Object> params) {

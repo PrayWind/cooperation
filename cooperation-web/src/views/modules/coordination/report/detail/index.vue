@@ -32,7 +32,7 @@
       <el-table-column
         prop="id"
         label="ID"
-        width="60px"
+        width="65px"
         header-align="center"
         align="center"
         sortable

@@ -115,8 +115,12 @@ public class ReportAnalysisController extends AbstractController {
         NumberFormat nf = NumberFormat.getInstance();
         // 设置精确到小数点后2位
         nf.setMaximumFractionDigits(2);
-        currentProcess = nf.format((float)currentFinishReportNum / (float)currentReportNum * 100);
-        totalProcess = nf.format((float)totalFinishReportNum / (float)totalReportNum * 100);
+        if (currentReportNum == 0) {
+            currentProcess = "0";
+        } else {
+            currentProcess = nf.format((double)currentFinishReportNum / (double)currentReportNum * 100);
+        }
+        totalProcess = nf.format((double)totalFinishReportNum / (double)totalReportNum * 100);
         processData.setCurrentProcess(currentProcess);
         processData.setTotalProcess(totalProcess);
 
